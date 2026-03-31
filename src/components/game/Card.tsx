@@ -19,6 +19,7 @@ type Props = {
   disabled?: boolean
   active?: boolean
   used?: boolean
+  restricted?: boolean   // card is not playable in the current board mode
   onClick: () => void
 }
 
@@ -82,14 +83,14 @@ const CARD_META: Record<CardId, CardMeta> = {
   },
 }
 
-export function Card({ cardId, disabled, active, used, onClick }: Props) {
+export function Card({ cardId, disabled, active, used, restricted, onClick }: Props) {
   const t = useTranslations('cards')
   const { icon: Icon, labelKey, color, colorRgb, flavor } = CARD_META[cardId]
 
   const name = t(`${labelKey}.name` as Parameters<typeof t>[0])
   const description = t(`${labelKey}.description` as Parameters<typeof t>[0])
 
-  const isInteractive = !disabled && !used
+  const isInteractive = !disabled && !used && !restricted
 
   const borderWidth = active ? 3 : 2
   const boxShadow = used
@@ -109,7 +110,8 @@ export function Card({ cardId, disabled, active, used, onClick }: Props) {
         'transition-all duration-200 ease-out',
         'overflow-hidden cursor-pointer',
         used && 'opacity-30 cursor-not-allowed grayscale',
-        !used && disabled && 'opacity-50 cursor-not-allowed',
+        restricted && 'opacity-40 cursor-not-allowed saturate-50',
+        !used && !restricted && disabled && 'opacity-50 cursor-not-allowed',
         isInteractive && !active && 'hover:-translate-y-1.5 hover:scale-[1.03]',
         active && '-translate-y-2.5 scale-[1.05]',
       )}
@@ -199,6 +201,29 @@ export function Card({ cardId, disabled, active, used, onClick }: Props) {
       >
         {flavor}
       </span>
+
+      {/* Restricted badge */}
+      {restricted && !used && (
+        <span
+          className="absolute bottom-2 inset-x-2 flex items-center justify-center rounded"
+          style={{
+            background: 'rgba(255,107,53,0.15)',
+            border: '1px solid rgba(255,107,53,0.4)',
+            padding: '2px 4px',
+          }}
+        >
+          <span
+            className="uppercase tracking-widest text-center"
+            style={{
+              fontFamily: 'var(--font-orbitron)',
+              fontSize: 8,
+              color: '#FF6B35',
+            }}
+          >
+            MULTI ONLY
+          </span>
+        </span>
+      )}
 
       {/* Used stamp */}
       {used && (

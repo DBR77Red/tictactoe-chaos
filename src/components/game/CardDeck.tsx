@@ -9,9 +9,10 @@ type Props = {
   activeCard: CardId | null
   onCardClick: (cardId: CardId) => void
   myTurn: boolean
+  restrictedCards?: Set<CardId>
 }
 
-export function CardDeck({ cards, activeCard, onCardClick, myTurn }: Props) {
+export function CardDeck({ cards, activeCard, onCardClick, myTurn, restrictedCards }: Props) {
   const t = useTranslations('cards')
 
   const handleClick = (cardId: CardId) => {
@@ -44,6 +45,7 @@ export function CardDeck({ cards, activeCard, onCardClick, myTurn }: Props) {
               cardId={cardId}
               active={activeCard === cardId}
               disabled={!myTurn}
+              restricted={restrictedCards?.has(cardId) ?? false}
               onClick={() => handleClick(cardId)}
             />
           ) : (

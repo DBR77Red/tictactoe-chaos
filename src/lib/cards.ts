@@ -1,4 +1,4 @@
-import type { CardId, GameState, Mark } from './types'
+import type { CardId, GameState, Mark, MultiBoard } from './types'
 import { classicToUltimate, classicToMulti, checkWinner } from './game-logic'
 
 export const ALL_CARD_IDS: CardId[] = [
@@ -28,33 +28,34 @@ function spendCard(state: GameState, cardId: CardId): GameState {
   }
 }
 
-// Card 1 — Spawn Board: transitions classic → multi
-export function applySpawnBoard(state: GameState): GameState {
+// Card 1 — Spawn Board: transitions classic → multi with a chosen layout.
+// Does NOT advance the turn — the player gets their move immediately after.
+export function applySpawnBoard(state: GameState, layout: MultiBoard['layout']): GameState {
   if (state.board.mode !== 'classic') return state
   if (state.turn === 'X' && state.spawnBoardUsedX) return state
   if (state.turn === 'O' && state.spawnBoardUsedO) return state
 
   return {
     ...spendCard(state, 'spawn_board'),
-    board: classicToMulti(state.board),
+    board: classicToMulti(state.board, layout),
     spawnBoardUsedX: state.turn === 'X' ? true : state.spawnBoardUsedX,
     spawnBoardUsedO: state.turn === 'O' ? true : state.spawnBoardUsedO,
   }
 }
 
-// Card 2 — Erase: removes one opponent mark
+// Card 2 — Erase: removes one opponent mark and blocks that cell for 1 full round.
 export function applyErase(state: GameState, boardIndex: number, cellIndex: number): GameState {
   const opponent: Mark = state.turn === 'X' ? 'O' : 'X'
   const board = state.board
+
+  let newState: GameState = state
 
   if (board.mode === 'classic') {
     if (board.cells[cellIndex] !== opponent) return state
     const cells = [...board.cells]
     cells[cellIndex] = null
-    return { ...spendCard(state, 'erase'), board: { ...board, cells } }
-  }
-
-  if (board.mode === 'multi') {
+    newState = { ...spendCard(state, 'erase'), board: { ...board, cells } }
+  } else if (board.mode === 'multi') {
     if (board.boards[boardIndex]?.cells[cellIndex] !== opponent) return state
     const boards = board.boards.map((b, i) => {
       if (i !== boardIndex) return b
@@ -62,10 +63,8 @@ export function applyErase(state: GameState, boardIndex: number, cellIndex: numb
       cells[cellIndex] = null
       return { cells }
     })
-    return { ...spendCard(state, 'erase'), board: { ...board, boards } }
-  }
-
-  if (board.mode === 'ultimate') {
+    newState = { ...spendCard(state, 'erase'), board: { ...board, boards } }
+  } else if (board.mode === 'ultimate') {
     if (board.boards[boardIndex]?.cells[cellIndex] !== opponent) return state
     const boards = board.boards.map((b, i) => {
       if (i !== boardIndex) return b
@@ -73,10 +72,20 @@ export function applyErase(state: GameState, boardIndex: number, cellIndex: numb
       cells[cellIndex] = null
       return { cells }
     })
-    return { ...spendCard(state, 'erase'), board: { ...board, boards } }
+    newState = { ...spendCard(state, 'erase'), board: { ...board, boards } }
   }
 
-  return state
+  if (newState === state) return state
+
+  // Block the erased cell for 1 full round (opponent's next turn + current player's next turn)
+  return {
+    ...newState,
+    erasedCell: {
+      boardIndex,
+      cellIndex,
+      expiresAfterTurn: state.turnNumber + 2,
+    },
+  }
 }
 
 // Card 3 — 9 Grid: transitions to ultimate mode
@@ -144,25 +153,29 @@ export function applyFreeze(
   const frozen = {
     type: target.type,
     index: target.index,
-    expiresAfterTurn: state.turnNumber + 2, // expires after opponent's next move
+    expiresAfterTurn: state.turnNumber + 2,
   }
   return { ...spendCard(state, 'freeze'), frozen }
 }
 
-// Card 6 — Double Down: grants a second move this turn (UI handles 2-click flow)
-// This function marks the card as spent and sets a flag the UI uses to request a 2nd move.
-// The actual second move is applied via the normal applyMove path.
+// Card 6 — Double Down: only allowed in multi or ultimate mode.
+// Grants a second move this turn; does NOT advance the turn.
 export function applyDoubleDown(state: GameState): GameState {
+  if (state.board.mode === 'classic') return state   // not allowed on a single board
   return { ...spendCard(state, 'double_down'), doubleDownActive: true } as GameState & { doubleDownActive: boolean }
 }
 
-// Card 7 — Time Warp: undoes the last 2 moves given a move history snapshot
-// historySnapshot: the board state from 2 turns ago
-export function applyTimeWarp(state: GameState, boardTwoTurnsAgo: GameState['board']): GameState {
-  if (state.turnNumber < 3) return state // not enough moves to undo
+// Card 7 — Time Warp: undoes the last 2 moves using the board history stored in state.
+export function applyTimeWarp(state: GameState): GameState {
+  if (state.turnNumber < 3) return state
+  const history = state.boardHistory ?? []
+  const boardTwoTurnsAgo = history[history.length - 2]
+  if (!boardTwoTurnsAgo) return state
+
   return {
     ...spendCard(state, 'time_warp'),
     board: boardTwoTurnsAgo,
+    boardHistory: history.slice(0, -2),
     turnNumber: state.turnNumber - 2,
   }
 }

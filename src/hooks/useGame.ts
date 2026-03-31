@@ -8,6 +8,7 @@ import {
   applyMultiMove,
   applyUltimateMove,
   isCellFrozen,
+  isCellErased,
 } from '@/lib/game-logic'
 import {
   applySpawnBoard,
@@ -18,8 +19,13 @@ import {
   applyDoubleDown,
   applyTimeWarp,
 } from '@/lib/cards'
-import type { GameState, CardId, Board } from '@/lib/types'
+import type { GameState, CardId, Board, MultiBoard } from '@/lib/types'
 import type { Json } from '@/lib/database.types'
+
+type SpawnPayload  = { layout: MultiBoard['layout'] }
+type CellPayload   = { boardIndex: number; cellIndex: number }
+type FreezePayload = { type: 'row' | 'col'; index: number }
+type CardPayload   = SpawnPayload | CellPayload | FreezePayload
 
 type UseGameReturn = {
   gameState: GameState | null
@@ -30,7 +36,7 @@ type UseGameReturn = {
   doubleDownActive: boolean
   setActiveCard: (card: CardId | null) => void
   playMove: (boardIndex: number, cellIndex: number) => Promise<void>
-  playCard: (cardId: CardId, payload?: { boardIndex: number; cellIndex: number } | { type: 'row' | 'col'; index: number }) => Promise<void>
+  playCard: (cardId: CardId, payload?: CardPayload) => Promise<void>
   isLoading: boolean
   connectionStatus: 'connecting' | 'connected' | 'disconnected'
 }
@@ -45,12 +51,7 @@ export function useGame(
   const [isLoading, setIsLoading] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
 
-  // Keep last 3 board snapshots for Time Warp (need board from 2 turns ago)
-  const boardHistory = useRef<Board[]>([])
-
   const supabase = useMemo(() => createClient(), [])
-
-  // Ref to the active Realtime channel so commitAndLog can broadcast on it
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
 
   const myMark = room.player_x === playerId ? 'X'
@@ -61,28 +62,17 @@ export function useGame(
 
   const myCards = myMark === 'X' ? (gameState?.cardsX ?? []) : (gameState?.cardsO ?? [])
 
-  // Stable ref so broadcast handler always sees latest setter without re-subscribing
   const setGameStateRef = useRef(setGameState)
   setGameStateRef.current = setGameState
 
-  // Subscribe via Broadcast (primary) + postgres_changes INSERT (game start fallback)
   useEffect(() => {
     const handleBroadcast = (payload: { payload: GameState }) => {
-      const next = payload.payload
-      setGameStateRef.current(prev => {
-        if (prev) {
-          boardHistory.current = [...boardHistory.current, prev.board].slice(-3)
-        }
-        return next
-      })
+      setGameStateRef.current(() => payload.payload)
     }
 
     const handleInsert = (payload: { new: Record<string, unknown> }) => {
-      // Only use postgres_changes for the initial INSERT (game start).
-      // Subsequent moves are synced via broadcast.
       setGameStateRef.current(prev => {
-        if (prev) return prev // already have state, ignore
-        boardHistory.current = []
+        if (prev) return prev
         return deserializeGameState(payload.new)
       })
     }
@@ -101,7 +91,6 @@ export function useGame(
       })
       .subscribe()
 
-    // Initial fetch — covers joining a game already in progress
     supabase
       .from('game_states')
       .select('*')
@@ -124,7 +113,6 @@ export function useGame(
     actionType: string,
     payload: Json
   ) => {
-    // Broadcast to opponent immediately — no RLS involved, sub-100ms delivery
     channelRef.current?.send({ type: 'broadcast', event: 'game_state', payload: newState })
     await commitGameState(supabase, roomId, newState)
     await logAction(supabase, roomId, myMark ?? '', actionType, payload)
@@ -133,6 +121,7 @@ export function useGame(
   const playMove = useCallback(async (boardIndex: number, cellIndex: number) => {
     if (!gameState || !myMark || !myTurn) return
     if (isCellFrozen(gameState.frozen, cellIndex, gameState.turnNumber)) return
+    if (isCellErased(gameState.erasedCell, boardIndex, cellIndex, gameState.turnNumber)) return
 
     setIsLoading(true)
 
@@ -151,12 +140,15 @@ export function useGame(
       newBoard = applyUltimateMove(gameState.board, boardIndex, cellIndex, myMark)
     }
 
-    // If Double Down is active, place the mark but keep the turn
+    // Double Down: place the mark but keep the turn (second move)
     if (doubleDownActive) {
-      const newState: GameState = { ...gameState, board: newBoard }
-      boardHistory.current = [...boardHistory.current, gameState.board].slice(-3)
+      const newState: GameState = {
+        ...gameState,
+        board: newBoard,
+        boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
+      }
       setDoubleDownActive(false)
-      setGameState(newState) // optimistic update
+      setGameState(newState)
       await commitAndLog(newState, 'move', { boardIndex, cellIndex, doubleDown: true } as unknown as Json)
       setIsLoading(false)
       return
@@ -168,18 +160,15 @@ export function useGame(
       turn: myMark === 'X' ? 'O' : 'X',
       turnNumber: gameState.turnNumber + 1,
       winner: checkResult(newBoard),
+      boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
     }
 
-    boardHistory.current = [...boardHistory.current, gameState.board].slice(-3)
-    setGameState(newState) // optimistic update — show mark immediately
+    setGameState(newState)
     await commitAndLog(newState, 'move', { boardIndex, cellIndex } as unknown as Json)
     setIsLoading(false)
   }, [gameState, myMark, myTurn, doubleDownActive, commitAndLog])
 
-  const playCard = useCallback(async (
-    cardId: CardId,
-    payload?: { boardIndex: number; cellIndex: number } | { type: 'row' | 'col'; index: number }
-  ) => {
+  const playCard = useCallback(async (cardId: CardId, payload?: CardPayload) => {
     if (!gameState || !myMark || !myTurn) return
     if (!myCards.includes(cardId)) return
 
@@ -188,9 +177,20 @@ export function useGame(
     let newState = gameState
 
     switch (cardId) {
-      case 'spawn_board':
-        newState = applySpawnBoard(gameState)
-        break
+      case 'spawn_board': {
+        if (!payload || !('layout' in payload)) { setIsLoading(false); return }
+        newState = applySpawnBoard(gameState, payload.layout)
+        // Spawn Board does NOT advance the turn — player moves immediately after
+        const spawnState: GameState = {
+          ...newState,
+          boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
+        }
+        setGameState(spawnState)
+        await commitAndLog(spawnState, 'card', { cardId, layout: payload.layout } as unknown as Json)
+        setActiveCard(null)
+        setIsLoading(false)
+        return
+      }
 
       case 'nine_grid':
         newState = applyNineGrid(gameState)
@@ -216,33 +216,35 @@ export function useGame(
 
       case 'double_down': {
         newState = applyDoubleDown(gameState)
-        // Double Down does NOT pass the turn — it grants an extra move this turn
+        if (newState === gameState) { setIsLoading(false); return } // rejected (classic mode)
         setDoubleDownActive(true)
-        boardHistory.current = [...boardHistory.current, gameState.board].slice(-3)
-        setGameState(newState) // optimistic update
-        await commitAndLog(newState, 'card', { cardId } as unknown as Json)
+        const ddState: GameState = {
+          ...newState,
+          boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
+        }
+        setGameState(ddState)
+        await commitAndLog(ddState, 'card', { cardId } as unknown as Json)
         setIsLoading(false)
         return
       }
 
       case 'time_warp': {
-        const boardTwoTurnsAgo = boardHistory.current[boardHistory.current.length - 2]
-        if (!boardTwoTurnsAgo) { setIsLoading(false); return }
-        newState = applyTimeWarp(gameState, boardTwoTurnsAgo)
+        newState = applyTimeWarp(gameState)
+        if (newState === gameState) { setIsLoading(false); return } // not enough history
         break
       }
     }
 
-    // All cards except double_down pass the turn
+    // All remaining cards advance the turn
     const finalState: GameState = {
       ...newState,
       turn: myMark === 'X' ? 'O' : 'X',
       turnNumber: newState.turnNumber + 1,
       winner: checkResult(newState.board),
+      boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
     }
 
-    boardHistory.current = [...boardHistory.current, gameState.board].slice(-3)
-    setGameState(finalState) // optimistic update
+    setGameState(finalState)
     await commitAndLog(finalState, 'card', { cardId, ...payload } as unknown as Json)
     setActiveCard(null)
     setIsLoading(false)
@@ -279,10 +281,12 @@ async function commitGameState(
       cards_x: state.cardsX as unknown as Json,
       cards_o: state.cardsO as unknown as Json,
       frozen: state.frozen as unknown as Json,
+      erased_cell: (state.erasedCell ?? null) as unknown as Json,
       spawn_board_used_x: state.spawnBoardUsedX,
       spawn_board_used_o: state.spawnBoardUsedO,
       winner: state.winner,
       turn_number: state.turnNumber,
+      board_history: (state.boardHistory ?? []) as unknown as Json,
       updated_at: new Date().toISOString(),
     })
     .eq('room_id', roomId)
@@ -307,9 +311,11 @@ function deserializeGameState(raw: Record<string, unknown>): GameState {
     cardsX: (raw.cards_x as CardId[]) ?? [],
     cardsO: (raw.cards_o as CardId[]) ?? [],
     frozen: (raw.frozen as GameState['frozen']) ?? {},
+    erasedCell: (raw.erased_cell as GameState['erasedCell']) ?? null,
     spawnBoardUsedX: (raw.spawn_board_used_x as boolean) ?? false,
     spawnBoardUsedO: (raw.spawn_board_used_o as boolean) ?? false,
     winner: (raw.winner as GameState['winner']) ?? null,
     turnNumber: (raw.turn_number as number) ?? 1,
+    boardHistory: (raw.board_history as Board[]) ?? [],
   }
 }
