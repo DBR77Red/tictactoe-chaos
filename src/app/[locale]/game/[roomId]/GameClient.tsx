@@ -41,9 +41,18 @@ function RoomCodeDisplay({ code }: { code: string }) {
 // Cards that need a cell target selected on the board
 const CELL_TARGET_CARDS = new Set<CardId>(['erase', 'mirror_strike'])
 // Cards played immediately with no target
-const INSTANT_CARDS = new Set<CardId>(['spawn_board', 'nine_grid', 'double_down', 'time_warp'])
+const INSTANT_CARDS = new Set<CardId>(['nine_grid', 'double_down', 'time_warp'])
 // Cards that need a row/col picker
 const ROW_COL_CARDS = new Set<CardId>(['freeze'])
+// Cards that need a board direction picker
+const LAYOUT_CARDS = new Set<CardId>(['spawn_board'])
+
+const LAYOUT_OPTIONS: { label: string; value: MultiBoardType['layout'] }[] = [
+  { label: '↑ Above', value: 'above' },
+  { label: '↓ Below', value: 'below' },
+  { label: '← Left',  value: 'left'  },
+  { label: '→ Right', value: 'right' },
+]
 
 export function GameClient({ roomId }: Props) {
   const router = useRouter()
@@ -86,12 +95,10 @@ export function GameClient({ roomId }: Props) {
   const board = gameState?.board
   const isGameOver = !!gameState?.winner
 
-  // Compute winning line for classic boards
   const winningLine = board?.mode === 'classic'
     ? getWinningLine((board as ClassicBoard).cells)
     : null
 
-  // Compute frozen cells for the current turn
   const frozenCells: number[] = []
   if (gameState?.frozen && 'type' in gameState.frozen) {
     for (let i = 0; i < 9; i++) {
@@ -101,9 +108,18 @@ export function GameClient({ roomId }: Props) {
     }
   }
 
-  // Handle card activation
+  // Cards restricted by current board mode
+  const restrictedCards = new Set<CardId>()
+  if (gameState?.board.mode === 'classic') {
+    restrictedCards.add('double_down')   // needs multiple boards
+  }
+  if (gameState?.board.mode !== 'classic') {
+    restrictedCards.add('spawn_board')   // already in multi/ultimate mode
+  }
+
   const handleCardClick = async (cardId: CardId) => {
     if (!myTurn) return
+    if (restrictedCards.has(cardId)) return
 
     // Toggle off
     if (activeCard === cardId) {
@@ -111,17 +127,15 @@ export function GameClient({ roomId }: Props) {
       return
     }
 
-    // Instant-play cards (no target needed)
     if (INSTANT_CARDS.has(cardId)) {
       await playCard(cardId)
       return
     }
 
-    // Target cards: enter selection mode
+    // Enter selection mode (cell, row/col, or layout picker)
     setActiveCard(cardId)
   }
 
-  // Handle a cell click — either a normal move or a card target
   const handleCellClick = async (boardIndex: number, cellIndex: number) => {
     if (!myTurn || isGameOver) return
 
@@ -164,10 +178,9 @@ export function GameClient({ roomId }: Props) {
         />
       )}
 
-      {/* Waiting for opponent — show whenever game hasn't started yet */}
+      {/* Waiting for opponent */}
       {!gameState && (
         <div className="flex-1 flex flex-col items-center justify-center gap-6">
-          {/* Room code — big and copyable */}
           <RoomCodeDisplay code={room.code} />
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#7b2fff] animate-pulse [box-shadow:0_0_8px_#7b2fff]" />
@@ -187,6 +200,12 @@ export function GameClient({ roomId }: Props) {
               onCellClick={(cellIndex) => handleCellClick(0, cellIndex)}
               winningLine={winningLine}
               frozenCells={frozenCells}
+              erasedCells={
+                gameState.erasedCell?.boardIndex === 0 &&
+                (gameState.erasedCell.expiresAfterTurn ?? 0) > gameState.turnNumber
+                  ? [gameState.erasedCell.cellIndex]
+                  : []
+              }
               selectionMode={selectionMode}
               selectionFilter={selectionFilter}
               disabled={isGameOver || !myTurn}
@@ -196,8 +215,11 @@ export function GameClient({ roomId }: Props) {
           {board.mode === 'multi' && (
             <MultiBoard
               boards={(board as MultiBoardType).boards}
+              layout={(board as MultiBoardType).layout}
               onCellClick={handleCellClick}
               frozenCells={frozenCells}
+              erasedCell={gameState.erasedCell}
+              turnNumber={gameState.turnNumber}
               selectionMode={selectionMode}
               selectionFilter={selectionFilter}
               disabled={isGameOver || !myTurn}
@@ -217,7 +239,27 @@ export function GameClient({ roomId }: Props) {
         </div>
       )}
 
-      {/* Freeze row/col picker — shown when freeze card is active */}
+      {/* Spawn Board direction picker */}
+      {gameState && !isGameOver && activeCard === 'spawn_board' && myTurn && (
+        <div className="flex flex-col items-center gap-3 py-3 border-t border-[#00e5ff30] bg-[#00e5ff08]">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#00e5ff]">
+            Choose where to place the new board
+          </span>
+          <div className="flex gap-2">
+            {LAYOUT_OPTIONS.map(({ label, value }) => (
+              <button
+                key={value}
+                onClick={() => { playCard('spawn_board', { layout: value }); setActiveCard(null) }}
+                className="px-3 py-2 text-xs font-mono font-bold border border-[#00e5ff60] text-[#00e5ff] hover:bg-[#00e5ff20] hover:border-[#00e5ff] transition-all rounded"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Freeze row/col picker */}
       {gameState && !isGameOver && activeCard === 'freeze' && myTurn && (
         <div className="flex flex-col items-center gap-2 py-3 border-t border-[#00d4ff30] bg-[#00d4ff08]">
           <span className="text-xs font-mono uppercase tracking-widest text-[#00d4ff]">
@@ -256,7 +298,7 @@ export function GameClient({ roomId }: Props) {
         </div>
       )}
 
-      {/* Card deck — shown during active game only */}
+      {/* Card deck */}
       {gameState && !isGameOver && (
         <div className="pb-6 pt-2 flex justify-center border-t border-[#7b2fff20]">
           <CardDeck
@@ -264,11 +306,12 @@ export function GameClient({ roomId }: Props) {
             activeCard={activeCard}
             onCardClick={handleCardClick}
             myTurn={myTurn}
+            restrictedCards={restrictedCards}
           />
         </div>
       )}
 
-      {/* Game over — go home */}
+      {/* Game over */}
       {isGameOver && (
         <div className="pb-8 flex justify-center">
           <button

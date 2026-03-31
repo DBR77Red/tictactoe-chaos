@@ -8,6 +8,7 @@ type Props = {
   onCellClick: (cellIndex: number) => void
   winningLine: number[] | null
   frozenCells: number[]
+  erasedCells?: number[]
   selectionMode?: 'erase' | 'mirror'
   selectionFilter?: Mark
   disabled?: boolean
@@ -23,6 +24,7 @@ export function Board({
   onCellClick,
   winningLine,
   frozenCells,
+  erasedCells = [],
   selectionMode,
   selectionFilter,
   disabled,
@@ -38,6 +40,7 @@ export function Board({
       {cells.map((mark, i) => {
         const isWinning = winningLine?.includes(i) ?? false
         const isFrozen = frozenCells.includes(i)
+        const isErased = erasedCells.includes(i)
         const isSelectable =
           selectionMode != null && mark === selectionFilter
         const isDimmed =
@@ -46,6 +49,7 @@ export function Board({
 
         const canClick =
           !disabled &&
+          !isErased &&
           (selectionMode == null ? isEmpty : isSelectable)
 
         return (
@@ -67,6 +71,8 @@ export function Board({
                 'bg-[#ffd700]/10 border-[#ffd700] [box-shadow:inset_0_0_12px_#ffd70040]',
               /* frozen cell */
               isFrozen && 'bg-[#00d4ff]/20',
+              /* erased/blocked cell */
+              isErased && 'bg-[#ff2d7a]/10 border-[#ff2d7a40] cursor-not-allowed',
               /* selection mode dimming */
               isDimmed && 'opacity-30',
               /* pulsing ring for selectable targets */
@@ -83,6 +89,12 @@ export function Board({
             {isFrozen && (
               <span className="absolute top-0.5 right-0.5 text-xs leading-none">
                 ❄️
+              </span>
+            )}
+            {/* erased/blocked badge */}
+            {isErased && (
+              <span className="absolute top-0.5 right-0.5 text-[10px] leading-none font-mono text-[#ff2d7a80]">
+                ✕
               </span>
             )}
           </button>

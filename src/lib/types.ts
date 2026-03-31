@@ -7,7 +7,8 @@ export type ClassicBoard = {
 
 export type MultiBoard = {
   mode: 'multi'
-  boards: { cells: Mark[] }[]   // 2 or 3 boards
+  boards: { cells: Mark[] }[]   // 2 boards
+  layout: 'right' | 'left' | 'below' | 'above'   // where boards[1] sits relative to boards[0]
 }
 
 export type UltimateBoard = {
@@ -33,14 +34,22 @@ export type FrozenState =
   | { type: 'col'; index: number; expiresAfterTurn: number }
   | Record<string, never>   // empty = no freeze
 
+export type ErasedCell = {
+  boardIndex: number
+  cellIndex: number
+  expiresAfterTurn: number
+}
+
 export type GameState = {
   board: Board
   turn: 'X' | 'O'
   cardsX: CardId[]
   cardsO: CardId[]
   frozen: FrozenState
+  erasedCell: ErasedCell | null
   spawnBoardUsedX: boolean
   spawnBoardUsedO: boolean
   winner: 'X' | 'O' | 'draw' | null
   turnNumber: number
+  boardHistory: Board[]   // last 3 boards, used by Time Warp
 }
