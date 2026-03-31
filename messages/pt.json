@@ -6,7 +6,8 @@
     "joinButton": "Entrar", "yourCode": "Código da sua sala",
     "shareCode": "Compartilhe este código com seu adversário",
     "waitingForOpponent": "Aguardando adversário...",
-    "opponentJoined": "Adversário entrou! O jogo vai começar..."
+    "opponentJoined": "Adversário entrou! O jogo vai começar...",
+    "copy": "Copiar Código", "copied": "Copiado!"
   },
   "game": {
     "turnX": "Vez do X", "turnO": "Vez do O",
@@ -15,18 +16,19 @@
     "youWin": "Você venceu!", "youLose": "Você perdeu!",
     "draw": "Empate!", "gameOver": "Fim de Jogo",
     "reconnecting": "Reconectando...", "connectionLost": "Conexão perdida",
+    "doubleDown": "Dobrar Aposta — coloque sua 2ª peça!",
     "goHome": "Início"
   },
   "cards": {
     "yourHand": "Suas cartas", "playCard": "Jogar",
     "selectTarget": "Selecione um alvo", "cancelCard": "Cancelar",
-    "spawn_board": { "name": "Novo Tabuleiro", "description": "Adiciona um novo tabuleiro ao lado do atual. Uma vez por jogo.", "selectPrompt": "" },
-    "erase": { "name": "Apagar", "description": "Remove uma jogada do adversário.", "selectPrompt": "Selecione uma jogada do adversário para apagar" },
-    "nine_grid": { "name": "Grade 9x", "description": "Transforma o jogo em Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
-    "mirror_strike": { "name": "Golpe Espelho", "description": "Rouba uma jogada do adversário e a converte para sua cor.", "selectPrompt": "Selecione uma jogada do adversário para roubar" },
-    "freeze": { "name": "Congelar", "description": "Bloqueia uma linha ou coluna por uma rodada.", "selectPrompt": "Selecione uma linha ou coluna para congelar" },
-    "double_down": { "name": "Dobrar Aposta", "description": "Coloque duas peças em um único turno.", "selectPrompt": "" },
-    "time_warp": { "name": "Dobra Temporal", "description": "Desfaz as duas últimas jogadas — uma de cada jogador.", "selectPrompt": "" }
+    "spawn_board": { "name": "Novo Tabuleiro", "description": "Adiciona um tabuleiro. Uma vez por jogo.", "selectPrompt": "" },
+    "erase": { "name": "Apagar", "description": "Remove uma jogada do adversário.", "selectPrompt": "Selecione uma jogada para apagar" },
+    "nine_grid": { "name": "Grade 9x", "description": "Ativa o modo Ultimate.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Golpe Espelho", "description": "Converte uma jogada adversária.", "selectPrompt": "Selecione uma jogada para roubar" },
+    "freeze": { "name": "Congelar", "description": "Bloqueia uma linha ou coluna por 1 rodada.", "selectPrompt": "Selecione linha ou coluna" },
+    "double_down": { "name": "Dobrar Aposta", "description": "Coloque 2 peças neste turno.", "selectPrompt": "" },
+    "time_warp": { "name": "Dobra Temporal", "description": "Desfaz as 2 últimas jogadas.", "selectPrompt": "" }
   },
   "errors": {
     "roomNotFound": "Sala não encontrada. Verifique o código e tente novamente.",

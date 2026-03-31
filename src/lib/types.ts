@@ -1,0 +1,46 @@
+export type Mark = 'X' | 'O' | null
+
+export type ClassicBoard = {
+  mode: 'classic'
+  cells: Mark[]           // length 9
+}
+
+export type MultiBoard = {
+  mode: 'multi'
+  boards: { cells: Mark[] }[]   // 2 or 3 boards
+}
+
+export type UltimateBoard = {
+  mode: 'ultimate'
+  metaBoard: (Mark | 'draw')[]       // length 9 — won mini-boards
+  boards: { cells: Mark[] }[]        // length 9 — the mini-boards
+  forcedBoard: number | null         // which mini-board opponent must play in
+}
+
+export type Board = ClassicBoard | MultiBoard | UltimateBoard
+
+export type CardId =
+  | 'spawn_board'
+  | 'erase'
+  | 'nine_grid'
+  | 'mirror_strike'
+  | 'freeze'
+  | 'double_down'
+  | 'time_warp'
+
+export type FrozenState =
+  | { type: 'row'; index: number; expiresAfterTurn: number }
+  | { type: 'col'; index: number; expiresAfterTurn: number }
+  | Record<string, never>   // empty = no freeze
+
+export type GameState = {
+  board: Board
+  turn: 'X' | 'O'
+  cardsX: CardId[]
+  cardsO: CardId[]
+  frozen: FrozenState
+  spawnBoardUsedX: boolean
+  spawnBoardUsedO: boolean
+  winner: 'X' | 'O' | 'draw' | null
+  turnNumber: number
+}
