@@ -2,7 +2,17 @@
 
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
+import {
+  LayoutGrid,
+  Eraser,
+  Grid2X2,
+  ArrowLeftRight,
+  Snowflake,
+  Zap,
+  RotateCcw,
+} from 'lucide-react'
 import type { CardId } from '@/lib/types'
+import type { LucideIcon } from 'lucide-react'
 
 type Props = {
   cardId: CardId
@@ -12,71 +22,195 @@ type Props = {
   onClick: () => void
 }
 
-const CARD_META: Record<CardId, { icon: string; labelKey: string }> = {
-  spawn_board:   { icon: '➕', labelKey: 'spawn_board' },
-  erase:         { icon: '🧹', labelKey: 'erase' },
-  nine_grid:     { icon: '🔲', labelKey: 'nine_grid' },
-  mirror_strike: { icon: '🪞', labelKey: 'mirror_strike' },
-  freeze:        { icon: '❄️', labelKey: 'freeze' },
-  double_down:   { icon: '✌️', labelKey: 'double_down' },
-  time_warp:     { icon: '⏪', labelKey: 'time_warp' },
+type CardMeta = {
+  icon: LucideIcon
+  labelKey: string
+  color: string
+  colorRgb: string
+  flavor: string
+}
+
+const CARD_META: Record<CardId, CardMeta> = {
+  spawn_board: {
+    icon: LayoutGrid,
+    labelKey: 'spawn_board',
+    color: '#00E5FF',
+    colorRgb: '0,229,255',
+    flavor: 'Expand the battlefield.',
+  },
+  erase: {
+    icon: Eraser,
+    labelKey: 'erase',
+    color: '#FF2D6B',
+    colorRgb: '255,45,107',
+    flavor: 'Clean the slate.',
+  },
+  nine_grid: {
+    icon: Grid2X2,
+    labelKey: 'nine_grid',
+    color: '#9B5CF6',
+    colorRgb: '155,92,246',
+    flavor: 'Win the board to win the board.',
+  },
+  mirror_strike: {
+    icon: ArrowLeftRight,
+    labelKey: 'mirror_strike',
+    color: '#FF6B35',
+    colorRgb: '255,107,53',
+    flavor: 'Their move becomes your weapon.',
+  },
+  freeze: {
+    icon: Snowflake,
+    labelKey: 'freeze',
+    color: '#00AAFF',
+    colorRgb: '0,170,255',
+    flavor: 'Time stops — for them.',
+  },
+  double_down: {
+    icon: Zap,
+    labelKey: 'double_down',
+    color: '#00FF9F',
+    colorRgb: '0,255,159',
+    flavor: 'One move wasn\'t enough.',
+  },
+  time_warp: {
+    icon: RotateCcw,
+    labelKey: 'time_warp',
+    color: '#FFD600',
+    colorRgb: '255,214,0',
+    flavor: 'Rewrite history.',
+  },
 }
 
 export function Card({ cardId, disabled, active, used, onClick }: Props) {
   const t = useTranslations('cards')
-  const { icon, labelKey } = CARD_META[cardId]
+  const { icon: Icon, labelKey, color, colorRgb, flavor } = CARD_META[cardId]
 
-  // messages shape: cards.spawn_board.name, cards.erase.name, etc.
-  const label = t(`${labelKey}.name` as Parameters<typeof t>[0])
+  const name = t(`${labelKey}.name` as Parameters<typeof t>[0])
+  const description = t(`${labelKey}.description` as Parameters<typeof t>[0])
+
+  const isInteractive = !disabled && !used
+
+  const borderWidth = active ? 3 : 2
+  const boxShadow = used
+    ? 'none'
+    : active
+      ? `0 0 12px ${color}, 0 0 36px rgba(${colorRgb},0.5), 0 12px 30px rgba(0,0,0,0.5)`
+      : `0 0 8px ${color}, 0 0 20px rgba(${colorRgb},0.3), inset 0 1px 0 rgba(255,255,255,0.05)`
 
   return (
     <button
-      onClick={!disabled && !used ? onClick : undefined}
-      disabled={disabled || used}
+      onClick={isInteractive ? onClick : undefined}
+      disabled={!isInteractive}
+      aria-pressed={active}
+      aria-label={name}
       className={cn(
-        'relative flex flex-col items-center justify-center gap-1',
-        'w-20 h-28 rounded-lg px-2',
-        'bg-[#12111a] border transition-all duration-150',
-        'select-none',
-
-        /* base border */
-        !active && !used && 'border-[#7b2fff]',
-
-        /* active state */
-        active && [
-          'border-[#ff2d7a]',
-          '-translate-y-1.5',
-          '[box-shadow:0_0_16px_#ff2d7a,0_0_32px_#ff2d7a60,0_8px_20px_#00000080]',
-        ],
-
-        /* used state */
-        used && 'opacity-30 border-[#333] cursor-not-allowed',
-
-        /* disabled state */
+        'relative flex flex-col gap-2 rounded-xl text-left select-none',
+        'transition-all duration-200 ease-out',
+        'overflow-hidden cursor-pointer',
+        used && 'opacity-30 cursor-not-allowed grayscale',
         !used && disabled && 'opacity-50 cursor-not-allowed',
-
-        /* hover — only when interactive */
-        !disabled && !used && !active && [
-          'hover:border-[#c026d3]',
-          'hover:[box-shadow:0_0_10px_#7b2fff60]',
-          'hover:-translate-y-0.5',
-        ],
+        isInteractive && !active && 'hover:-translate-y-1.5 hover:scale-[1.03]',
+        active && '-translate-y-2.5 scale-[1.05]',
       )}
+      style={{
+        width: 140,
+        minHeight: 200,
+        padding: 12,
+        background: 'linear-gradient(145deg, #12123A, #0D0D2B)',
+        border: `${borderWidth}px solid ${used ? '#333' : color}`,
+        borderRadius: 12,
+        boxShadow,
+      }}
     >
-      <span className="text-3xl leading-none">{icon}</span>
+      {/* Inner top glow */}
       <span
-        className={cn(
-          'text-[10px] font-mono uppercase tracking-wide leading-tight text-center',
-          !used ? 'text-[#c026d3]' : 'text-[#555]',
-          active && '[filter:drop-shadow(0_0_6px_#ff2d7a)] text-[#ff2d7a]',
-        )}
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `linear-gradient(to bottom, rgba(${colorRgb},0.06), transparent 40%)`,
+        }}
+      />
+
+      {/* Zone 1 — Icon + Name */}
+      <div className="flex items-start gap-2 relative">
+        <span
+          className="flex items-center justify-center shrink-0 rounded-lg"
+          style={{
+            width: 40,
+            height: 40,
+            border: `1.5px solid rgba(${colorRgb},0.6)`,
+            background: `rgba(${colorRgb},0.08)`,
+          }}
+        >
+          <Icon
+            size={20}
+            style={{ color, filter: `drop-shadow(0 0 4px ${color})` }}
+          />
+        </span>
+        <span
+          className="mt-0.5 leading-tight"
+          style={{
+            fontFamily: 'var(--font-orbitron)',
+            fontSize: 11,
+            fontWeight: 700,
+            color,
+            textShadow: `0 0 8px rgba(${colorRgb},0.8)`,
+            wordBreak: 'break-word',
+          }}
+        >
+          {name}
+        </span>
+      </div>
+
+      {/* Zone 2 — Divider */}
+      <span
+        aria-hidden
+        className="block w-full"
+        style={{ height: 1, background: `rgba(${colorRgb},0.3)` }}
+      />
+
+      {/* Zone 3 — Description */}
+      <span
+        className="flex-1 relative"
+        style={{
+          fontFamily: 'var(--font-rajdhani)',
+          fontSize: 12,
+          fontWeight: 500,
+          color: '#9CA3C8',
+          lineHeight: 1.4,
+        }}
       >
-        {label}
+        {description}
       </span>
 
+      {/* Zone 4 — Flavor */}
+      <span
+        className="relative"
+        style={{
+          fontFamily: 'var(--font-nunito)',
+          fontSize: 11,
+          fontStyle: 'italic',
+          color: '#5E6390',
+          lineHeight: 1.3,
+          borderTop: '1px solid rgba(255,255,255,0.04)',
+          paddingTop: 6,
+        }}
+      >
+        {flavor}
+      </span>
+
+      {/* Used stamp */}
       {used && (
         <span className="absolute inset-0 flex items-center justify-center">
-          <span className="text-[9px] font-mono uppercase tracking-widest text-[#444] rotate-[-20deg]">
+          <span
+            className="rotate-[-20deg] uppercase tracking-widest"
+            style={{
+              fontFamily: 'var(--font-orbitron)',
+              fontSize: 9,
+              color: '#444',
+            }}
+          >
             USED
           </span>
         </span>

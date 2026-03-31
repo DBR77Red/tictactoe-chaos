@@ -42,6 +42,8 @@ function RoomCodeDisplay({ code }: { code: string }) {
 const CELL_TARGET_CARDS = new Set<CardId>(['erase', 'mirror_strike'])
 // Cards played immediately with no target
 const INSTANT_CARDS = new Set<CardId>(['spawn_board', 'nine_grid', 'double_down', 'time_warp'])
+// Cards that need a row/col picker
+const ROW_COL_CARDS = new Set<CardId>(['freeze'])
 
 export function GameClient({ roomId }: Props) {
   const router = useRouter()
@@ -212,6 +214,45 @@ export function GameClient({ roomId }: Props) {
               disabled={isGameOver || !myTurn}
             />
           )}
+        </div>
+      )}
+
+      {/* Freeze row/col picker — shown when freeze card is active */}
+      {gameState && !isGameOver && activeCard === 'freeze' && myTurn && (
+        <div className="flex flex-col items-center gap-2 py-3 border-t border-[#00d4ff30] bg-[#00d4ff08]">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#00d4ff]">
+            Select row or column to freeze
+          </span>
+          <div className="flex gap-6">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#555]">Row</span>
+              <div className="flex gap-1">
+                {[0, 1, 2].map(i => (
+                  <button
+                    key={i}
+                    onClick={() => { playCard('freeze', { type: 'row', index: i }); setActiveCard(null) }}
+                    className="w-8 h-8 text-xs font-mono font-bold border border-[#00d4ff60] text-[#00d4ff] hover:bg-[#00d4ff20] hover:border-[#00d4ff] transition-all rounded"
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#555]">Col</span>
+              <div className="flex gap-1">
+                {[0, 1, 2].map(i => (
+                  <button
+                    key={i}
+                    onClick={() => { playCard('freeze', { type: 'col', index: i }); setActiveCard(null) }}
+                    className="w-8 h-8 text-xs font-mono font-bold border border-[#00d4ff60] text-[#00d4ff] hover:bg-[#00d4ff20] hover:border-[#00d4ff] transition-all rounded"
+                  >
+                    {String.fromCharCode(65 + i)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
