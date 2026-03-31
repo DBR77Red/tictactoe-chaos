@@ -231,7 +231,13 @@ export function useGame(
       case 'time_warp': {
         newState = applyTimeWarp(gameState)
         if (newState === gameState) { setIsLoading(false); return } // not enough history
-        break
+        // Time Warp does NOT advance the turn — player gets to move on the reverted board
+        // (applyTimeWarp already manages boardHistory internally, so don't push here)
+        setGameState(newState)
+        await commitAndLog(newState, 'card', { cardId } as unknown as Json)
+        setActiveCard(null)
+        setIsLoading(false)
+        return
       }
     }
 
