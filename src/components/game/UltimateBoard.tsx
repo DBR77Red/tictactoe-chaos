@@ -2,14 +2,19 @@
 
 import { cn } from '@/lib/utils'
 import { Board } from './Board'
-import type { Mark, UltimateBoard as UltimateBoardType } from '@/lib/types'
+import type { Mark, ShieldedCell, VoidedCell, UltimateBoard as UltimateBoardType } from '@/lib/types'
 
 type Props = {
   board: UltimateBoardType
   onCellClick: (boardIndex: number, cellIndex: number) => void
   myMark: Mark
   frozenCells?: number[]
-  selectionMode?: 'erase' | 'mirror'
+  shieldedCell?: ShieldedCell | null
+  voidedCells?: VoidedCell[]
+  turnNumber?: number
+  selectionMode?: 'erase' | 'mirror' | 'shield' | 'void' | 'clone_src' | 'clone_dst'
+  selectionFilter?: Mark
+  cloneSelectableCells?: { boardIndex: number; cells: number[] }
   disabled?: boolean
 }
 
@@ -23,7 +28,12 @@ export function UltimateBoard({
   onCellClick,
   myMark,
   frozenCells = [],
+  shieldedCell = null,
+  voidedCells = [],
+  turnNumber = 0,
   selectionMode,
+  selectionFilter,
+  cloneSelectableCells,
   disabled,
 }: Props) {
   return (
@@ -58,7 +68,15 @@ export function UltimateBoard({
               onCellClick={(cellIndex) => onCellClick(boardIndex, cellIndex)}
               winningLine={null}
               frozenCells={frozenCells}
+              shieldedCells={
+                shieldedCell && shieldedCell.boardIndex === boardIndex && shieldedCell.expiresAfterTurn > turnNumber
+                  ? [shieldedCell.cellIndex]
+                  : []
+              }
+              voidedCells={voidedCells.filter(v => v.boardIndex === boardIndex).map(v => v.cellIndex)}
               selectionMode={selectionMode}
+              selectionFilter={selectionFilter}
+              selectableCells={cloneSelectableCells?.boardIndex === boardIndex ? cloneSelectableCells.cells : undefined}
               disabled={disabled || isWon || isDraw || (!isActive && !selectionMode)}
             />
 

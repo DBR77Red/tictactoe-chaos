@@ -9,8 +9,11 @@ type Props = {
   winningLine: number[] | null
   frozenCells: number[]
   erasedCells?: number[]
-  selectionMode?: 'erase' | 'mirror'
+  voidedCells?: number[]
+  shieldedCells?: number[]
+  selectionMode?: 'erase' | 'mirror' | 'shield' | 'void' | 'clone_src' | 'clone_dst'
   selectionFilter?: Mark
+  selectableCells?: number[]  // override for clone_dst: which cells are valid targets
   disabled?: boolean
 }
 
@@ -25,8 +28,11 @@ export function Board({
   winningLine,
   frozenCells,
   erasedCells = [],
+  voidedCells = [],
+  shieldedCells = [],
   selectionMode,
   selectionFilter,
+  selectableCells,
   disabled,
 }: Props) {
   return (
@@ -41,15 +47,19 @@ export function Board({
         const isWinning = winningLine?.includes(i) ?? false
         const isFrozen = frozenCells.includes(i)
         const isErased = erasedCells.includes(i)
-        const isSelectable =
-          selectionMode != null && mark === selectionFilter
-        const isDimmed =
-          selectionMode != null && mark !== selectionFilter
+        const isVoided = voidedCells.includes(i)
+        const isShielded = shieldedCells.includes(i)
         const isEmpty = mark === null
+
+        const isSelectable = selectionMode != null
+          ? (selectableCells != null ? selectableCells.includes(i) : mark === selectionFilter)
+          : false
+        const isDimmed = selectionMode != null && !isSelectable && !isVoided
 
         const canClick =
           !disabled &&
           !isErased &&
+          !isVoided &&
           (selectionMode == null ? isEmpty : isSelectable)
 
         return (
@@ -73,6 +83,8 @@ export function Board({
               isFrozen && 'bg-[#00d4ff]/20',
               /* erased/blocked cell */
               isErased && 'bg-[#ff2d7a]/10 border-[#ff2d7a40] cursor-not-allowed',
+              /* voided cell — permanently unplayable */
+              isVoided && 'bg-[#111122] border-[#2a2a55] cursor-not-allowed',
               /* selection mode dimming */
               isDimmed && 'opacity-30',
               /* pulsing ring for selectable targets */
@@ -80,6 +92,7 @@ export function Board({
               /* cursor */
               !canClick && 'cursor-not-allowed',
             )}
+            style={isShielded ? { borderColor: '#FFA500', boxShadow: 'inset 0 0 10px #FFA50040, 0 0 8px #FFA50060' } : undefined}
           >
             {mark && (
               <span className={MARK_STYLES[mark]}>{mark}</span>
@@ -95,6 +108,18 @@ export function Board({
             {isErased && (
               <span className="absolute top-0.5 right-0.5 text-[10px] leading-none font-mono text-[#ff2d7a80]">
                 ✕
+              </span>
+            )}
+            {/* voided badge */}
+            {isVoided && (
+              <span className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-[#333366] select-none pointer-events-none">
+                ✕
+              </span>
+            )}
+            {/* shielded badge */}
+            {isShielded && (
+              <span className="absolute top-0.5 right-0.5 text-xs leading-none" style={{ color: '#FFA500', filter: 'drop-shadow(0 0 4px #FFA500)' }}>
+                ⬡
               </span>
             )}
           </button>

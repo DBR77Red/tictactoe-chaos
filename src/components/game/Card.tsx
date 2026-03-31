@@ -10,6 +10,9 @@ import {
   Snowflake,
   Zap,
   RotateCcw,
+  ShieldCheck,
+  Minus,
+  Copy,
 } from 'lucide-react'
 import type { CardId } from '@/lib/types'
 import type { LucideIcon } from 'lucide-react'
@@ -80,6 +83,27 @@ const CARD_META: Record<CardId, CardMeta> = {
     color: '#FFD600',
     colorRgb: '255,214,0',
     flavor: 'Rewrite history.',
+  },
+  shield: {
+    icon: ShieldCheck,
+    labelKey: 'shield',
+    color: '#FFA500',
+    colorRgb: '255,165,0',
+    flavor: 'Some things cannot be taken.',
+  },
+  void: {
+    icon: Minus,
+    labelKey: 'void',
+    color: '#6B6B99',
+    colorRgb: '107,107,153',
+    flavor: 'Some squares stop existing.',
+  },
+  clone: {
+    icon: Copy,
+    labelKey: 'clone',
+    color: '#00E5CC',
+    colorRgb: '0,229,204',
+    flavor: 'One becomes two.',
   },
 }
 

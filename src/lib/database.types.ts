@@ -52,47 +52,59 @@ export type Database = {
       game_states: {
         Row: {
           board: Json
+          board_history: Json
           cards_o: Json
           cards_x: Json
+          erased_cell: Json | null
           frozen: Json
           game_mode: string
           id: string
           room_id: string
+          shielded_cell: Json | null
           spawn_board_used_o: boolean
           spawn_board_used_x: boolean
           turn: string
           turn_number: number
           updated_at: string
+          voided_cells: Json
           winner: string | null
         }
         Insert: {
           board: Json
+          board_history?: Json
           cards_o?: Json
           cards_x?: Json
+          erased_cell?: Json | null
           frozen?: Json
           game_mode?: string
           id?: string
           room_id: string
+          shielded_cell?: Json | null
           spawn_board_used_o?: boolean
           spawn_board_used_x?: boolean
           turn?: string
           turn_number?: number
           updated_at?: string
+          voided_cells?: Json
           winner?: string | null
         }
         Update: {
           board?: Json
+          board_history?: Json
           cards_o?: Json
           cards_x?: Json
+          erased_cell?: Json | null
           frozen?: Json
           game_mode?: string
           id?: string
           room_id?: string
+          shielded_cell?: Json | null
           spawn_board_used_o?: boolean
           spawn_board_used_x?: boolean
           turn?: string
           turn_number?: number
           updated_at?: string
+          voided_cells?: Json
           winner?: string | null
         }
         Relationships: [

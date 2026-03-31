@@ -28,7 +28,10 @@
     "mirror_strike": { "name": "Golpe Espejo", "description": "Convierte una jugada del oponente.", "selectPrompt": "Selecciona jugada para robar" },
     "freeze": { "name": "Congelar", "description": "Bloquea una fila o columna por 1 ronda.", "selectPrompt": "Selecciona fila o columna" },
     "double_down": { "name": "Doble Apuesta", "description": "Coloca 2 marcas en un turno.", "selectPrompt": "" },
-    "time_warp": { "name": "Salto Temporal", "description": "Deshace los 2 últimos movimientos.", "selectPrompt": "" }
+    "time_warp": { "name": "Salto Temporal", "description": "Deshace los 2 últimos movimientos.", "selectPrompt": "" },
+    "shield": { "name": "Escudo", "description": "Protege una de tus marcas por 2 rondas.", "selectPrompt": "Selecciona tu marca para proteger" },
+    "void": { "name": "Vacío", "description": "Elimina permanentemente una celda vacía.", "selectPrompt": "Selecciona una celda vacía para anular" },
+    "clone": { "name": "Clonar", "description": "Copia una de tus marcas a una celda adyacente.", "selectPrompt": "Selecciona tu marca para clonar" }
   },
   "errors": {
     "roomNotFound": "Sala no encontrada. Comprueba el código e inténtalo de nuevo.",

@@ -10,7 +10,7 @@ import { MultiBoard } from '@/components/game/MultiBoard'
 import { UltimateBoard } from '@/components/game/UltimateBoard'
 import { CardDeck } from '@/components/game/CardDeck'
 import { GameStatus } from '@/components/game/GameStatus'
-import { getWinningLine, isCellFrozen } from '@/lib/game-logic'
+import { getWinningLine, isCellFrozen, isCellVoided } from '@/lib/game-logic'
 import type { CardId, ClassicBoard, MultiBoard as MultiBoardType, UltimateBoard as UltimateBoardType } from '@/lib/types'
 
 type Props = { roomId: string }
@@ -39,7 +39,7 @@ function RoomCodeDisplay({ code }: { code: string }) {
 }
 
 // Cards that need a cell target selected on the board
-const CELL_TARGET_CARDS = new Set<CardId>(['erase', 'mirror_strike'])
+const CELL_TARGET_CARDS = new Set<CardId>(['erase', 'mirror_strike', 'shield', 'void', 'clone'])
 // Cards played immediately with no target
 const INSTANT_CARDS = new Set<CardId>(['nine_grid', 'double_down', 'time_warp'])
 // Cards that need a row/col picker
@@ -63,7 +63,7 @@ export function GameClient({ roomId }: Props) {
   const { room, isLoading: roomLoading } = useRoom(roomId)
 
   const { gameState, myMark, myTurn, myCards, activeCard, doubleDownActive,
-    setActiveCard, playMove, playCard, connectionStatus } = useGame(
+    cloneStep, cloneSrc, setActiveCard, playMove, playCard, connectionStatus } = useGame(
     roomId,
     room ?? { player_x: null, player_o: null }
   )
@@ -141,16 +141,59 @@ export function GameClient({ roomId }: Props) {
 
     if (activeCard && CELL_TARGET_CARDS.has(activeCard)) {
       await playCard(activeCard, { boardIndex, cellIndex })
-      setActiveCard(null)
+      // Clone step 1 keeps activeCard active for step 2; all others dismiss
+      if (activeCard !== 'clone' || cloneStep !== 1) {
+        setActiveCard(null)
+      }
     } else if (!activeCard) {
       await playMove(boardIndex, cellIndex)
     }
   }
 
-  const selectionMode = activeCard && CELL_TARGET_CARDS.has(activeCard)
-    ? (activeCard === 'erase' ? 'erase' : 'mirror')
-    : undefined
-  const selectionFilter = selectionMode ? (myMark === 'X' ? 'O' : 'X') : undefined
+  // Compute selection mode and filter based on active card and clone step
+  const selectionMode = (() => {
+    if (!activeCard || !CELL_TARGET_CARDS.has(activeCard)) return undefined
+    if (activeCard === 'erase') return 'erase' as const
+    if (activeCard === 'mirror_strike') return 'mirror' as const
+    if (activeCard === 'shield') return 'shield' as const
+    if (activeCard === 'void') return 'void' as const
+    if (activeCard === 'clone') return cloneStep === 2 ? 'clone_dst' as const : 'clone_src' as const
+    return undefined
+  })()
+
+  const selectionFilter = (() => {
+    if (selectionMode === 'erase' || selectionMode === 'mirror') return (myMark === 'X' ? 'O' : 'X') as 'X' | 'O'
+    if (selectionMode === 'shield' || selectionMode === 'clone_src') return myMark ?? undefined
+    if (selectionMode === 'void') return null
+    return undefined
+  })()
+
+  // Compute valid destination cells for Clone step 2
+  const cloneSelectableCells = (() => {
+    if (selectionMode !== 'clone_dst' || !cloneSrc || !gameState) return undefined
+    const { boardIndex: srcBoard, cellIndex: srcCell } = cloneSrc
+    const srcRow = Math.floor(srcCell / 3)
+    const srcCol = srcCell % 3
+    const board = gameState.board
+    const getCells = (bi: number) => {
+      if (board.mode === 'classic') return board.cells
+      return board.boards[bi]?.cells ?? null
+    }
+    const cells = getCells(srcBoard)
+    if (!cells) return undefined
+    const valid = Array.from({ length: 9 }, (_, i) => i).filter(i => {
+      const row = Math.floor(i / 3)
+      const col = i % 3
+      return (
+        i !== srcCell &&
+        Math.abs(row - srcRow) <= 1 &&
+        Math.abs(col - srcCol) <= 1 &&
+        cells[i] === null &&
+        !isCellVoided(gameState.voidedCells ?? [], srcBoard, i)
+      )
+    })
+    return { boardIndex: srcBoard, cells: valid }
+  })()
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
@@ -206,8 +249,16 @@ export function GameClient({ roomId }: Props) {
                   ? [gameState.erasedCell.cellIndex]
                   : []
               }
+              shieldedCells={
+                gameState.shieldedCell?.boardIndex === 0 &&
+                (gameState.shieldedCell.expiresAfterTurn ?? 0) > gameState.turnNumber
+                  ? [gameState.shieldedCell.cellIndex]
+                  : []
+              }
+              voidedCells={(gameState.voidedCells ?? []).filter(v => v.boardIndex === 0).map(v => v.cellIndex)}
               selectionMode={selectionMode}
               selectionFilter={selectionFilter}
+              selectableCells={cloneSelectableCells?.boardIndex === 0 ? cloneSelectableCells.cells : undefined}
               disabled={isGameOver || !myTurn}
             />
           )}
@@ -219,9 +270,12 @@ export function GameClient({ roomId }: Props) {
               onCellClick={handleCellClick}
               frozenCells={frozenCells}
               erasedCell={gameState.erasedCell}
+              shieldedCell={gameState.shieldedCell}
+              voidedCells={gameState.voidedCells ?? []}
               turnNumber={gameState.turnNumber}
               selectionMode={selectionMode}
               selectionFilter={selectionFilter}
+              cloneSelectableCells={cloneSelectableCells}
               disabled={isGameOver || !myTurn}
             />
           )}
@@ -232,7 +286,12 @@ export function GameClient({ roomId }: Props) {
               onCellClick={handleCellClick}
               myMark={myMark}
               frozenCells={frozenCells}
+              shieldedCell={gameState.shieldedCell}
+              voidedCells={gameState.voidedCells ?? []}
+              turnNumber={gameState.turnNumber}
               selectionMode={selectionMode}
+              selectionFilter={selectionFilter}
+              cloneSelectableCells={cloneSelectableCells}
               disabled={isGameOver || !myTurn}
             />
           )}

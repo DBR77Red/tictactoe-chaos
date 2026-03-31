@@ -28,7 +28,10 @@
     "mirror_strike": { "name": "Mirror Strike", "description": "Flip an opponent mark to yours.", "selectPrompt": "Select opponent mark to steal" },
     "freeze": { "name": "Freeze", "description": "Lock a row or column for 1 round.", "selectPrompt": "Select row or column to freeze" },
     "double_down": { "name": "Double Down", "description": "Place 2 marks this turn.", "selectPrompt": "" },
-    "time_warp": { "name": "Time Warp", "description": "Undo last 2 moves.", "selectPrompt": "" }
+    "time_warp": { "name": "Time Warp", "description": "Undo last 2 moves.", "selectPrompt": "" },
+    "shield": { "name": "Shield", "description": "Protect one of your marks for 2 rounds.", "selectPrompt": "Select your mark to shield" },
+    "void": { "name": "Void", "description": "Permanently remove an empty cell.", "selectPrompt": "Select an empty cell to void" },
+    "clone": { "name": "Clone", "description": "Copy one of your marks to an adjacent cell.", "selectPrompt": "Select your mark to clone" }
   },
   "errors": {
     "roomNotFound": "Room not found. Check the code and try again.",

@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { Board } from './Board'
-import type { Mark, ErasedCell, MultiBoard as MultiBoardType } from '@/lib/types'
+import type { Mark, ErasedCell, ShieldedCell, VoidedCell, MultiBoard as MultiBoardType } from '@/lib/types'
 
 type Props = {
   boards: { cells: Mark[] }[]
@@ -10,9 +10,12 @@ type Props = {
   onCellClick: (boardIndex: number, cellIndex: number) => void
   frozenCells?: number[]
   erasedCell?: ErasedCell | null
+  shieldedCell?: ShieldedCell | null
+  voidedCells?: VoidedCell[]
   turnNumber?: number
-  selectionMode?: 'erase' | 'mirror'
+  selectionMode?: 'erase' | 'mirror' | 'shield' | 'void' | 'clone_src' | 'clone_dst'
   selectionFilter?: Mark
+  cloneSelectableCells?: { boardIndex: number; cells: number[] }
   disabled?: boolean
 }
 
@@ -22,9 +25,12 @@ export function MultiBoard({
   onCellClick,
   frozenCells = [],
   erasedCell = null,
+  shieldedCell = null,
+  voidedCells = [],
   turnNumber = 0,
   selectionMode,
   selectionFilter,
+  cloneSelectableCells,
   disabled,
 }: Props) {
   const isHorizontal = layout === 'right' || layout === 'left'
@@ -40,6 +46,16 @@ export function MultiBoard({
     if (erasedCell.boardIndex !== boardIndex) return []
     return [erasedCell.cellIndex]
   }
+
+  const getShieldedCells = (boardIndex: number): number[] => {
+    if (!shieldedCell) return []
+    if (shieldedCell.expiresAfterTurn <= turnNumber) return []
+    if (shieldedCell.boardIndex !== boardIndex) return []
+    return [shieldedCell.cellIndex]
+  }
+
+  const getVoidedCells = (boardIndex: number): number[] =>
+    voidedCells.filter(v => v.boardIndex === boardIndex).map(v => v.cellIndex)
 
   const separator = isHorizontal ? (
     <div className="w-px h-24 mx-4 bg-[#7b2fff] [box-shadow:0_0_8px_#7b2fff]" />
@@ -70,8 +86,11 @@ export function MultiBoard({
               winningLine={null}
               frozenCells={frozenCells}
               erasedCells={getErasedCells(boardIndex)}
+              shieldedCells={getShieldedCells(boardIndex)}
+              voidedCells={getVoidedCells(boardIndex)}
               selectionMode={selectionMode}
               selectionFilter={selectionFilter}
+              selectableCells={cloneSelectableCells?.boardIndex === boardIndex ? cloneSelectableCells.cells : undefined}
               disabled={disabled}
             />
           </div>

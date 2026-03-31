@@ -1,4 +1,4 @@
-import type { Mark, ClassicBoard, MultiBoard, UltimateBoard, Board, FrozenState, ErasedCell } from './types'
+import type { Mark, ClassicBoard, MultiBoard, UltimateBoard, Board, FrozenState, ErasedCell, ShieldedCell, VoidedCell } from './types'
 
 export const WINNING_LINES = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -176,6 +176,16 @@ export function isCellErased(erasedCell: ErasedCell | null, boardIndex: number, 
   if (!erasedCell) return false
   if (erasedCell.expiresAfterTurn <= turnNumber) return false
   return erasedCell.boardIndex === boardIndex && erasedCell.cellIndex === cellIndex
+}
+
+export function isCellShielded(shieldedCell: ShieldedCell | null, boardIndex: number, cellIndex: number, turnNumber: number): boolean {
+  if (!shieldedCell) return false
+  if (shieldedCell.expiresAfterTurn <= turnNumber) return false
+  return shieldedCell.boardIndex === boardIndex && shieldedCell.cellIndex === cellIndex
+}
+
+export function isCellVoided(voidedCells: VoidedCell[], boardIndex: number, cellIndex: number): boolean {
+  return voidedCells.some(v => v.boardIndex === boardIndex && v.cellIndex === cellIndex)
 }
 
 export function classicToUltimate(board: ClassicBoard): UltimateBoard {
