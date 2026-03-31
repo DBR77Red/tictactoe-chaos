@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { cn } from '@/lib/utils'
 import { Card } from './Card'
 import type { CardId } from '@/lib/types'
 
@@ -16,7 +15,6 @@ export function CardDeck({ cards, activeCard, onCardClick, myTurn }: Props) {
   const t = useTranslations('cards')
 
   const handleClick = (cardId: CardId) => {
-    // Toggle: clicking active card again cancels
     onCardClick(activeCard === cardId ? (null as unknown as CardId) : cardId)
   }
 
@@ -25,11 +23,20 @@ export function CardDeck({ cards, activeCard, onCardClick, myTurn }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#7b2fff] [filter:drop-shadow(0_0_6px_#7b2fff)]">
+      <span
+        className="uppercase tracking-[0.25em]"
+        style={{
+          fontFamily: 'var(--font-rajdhani)',
+          fontSize: 11,
+          fontWeight: 600,
+          color: '#9B5CF6',
+          filter: 'drop-shadow(0 0 6px #9B5CF6)',
+        }}
+      >
         {t('yourHand')}
       </span>
 
-      <div className="flex items-end gap-3">
+      <div className="flex items-end gap-3 px-4">
         {slots.map((cardId, i) =>
           cardId ? (
             <Card
@@ -42,11 +49,13 @@ export function CardDeck({ cards, activeCard, onCardClick, myTurn }: Props) {
           ) : (
             <div
               key={`empty-${i}`}
-              className={cn(
-                'w-20 h-28 rounded-lg',
-                'border border-dashed border-[#7b2fff30]',
-                'bg-[#12111a]/40',
-              )}
+              style={{
+                width: 140,
+                minHeight: 200,
+                borderRadius: 12,
+                border: '2px dashed rgba(155,92,246,0.2)',
+                background: 'rgba(13,13,43,0.4)',
+              }}
             />
           )
         )}
