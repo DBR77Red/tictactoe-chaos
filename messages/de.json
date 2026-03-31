@@ -1,0 +1,37 @@
+{
+  "nav": { "title": "Tic-Tac-Toe Chaos", "language": "Sprache" },
+  "room": {
+    "create": "Raum erstellen", "join": "Raum beitreten",
+    "enterCode": "Raumcode eingeben", "codePlaceholder": "z.B. KPM-7Q3",
+    "joinButton": "Beitreten", "yourCode": "Dein Raumcode",
+    "shareCode": "Teile diesen Code mit deinem Gegner",
+    "waitingForOpponent": "Warte auf Gegner...",
+    "opponentJoined": "Gegner beigetreten! Spiel startet..."
+  },
+  "game": {
+    "turnX": "X ist dran", "turnO": "O ist dran",
+    "yourTurn": "Du bist dran", "opponentTurn": "Gegner ist dran",
+    "winnerX": "X gewinnt!", "winnerO": "O gewinnt!",
+    "youWin": "Du gewinnst!", "youLose": "Du verlierst!",
+    "draw": "Unentschieden!", "gameOver": "Spielende",
+    "reconnecting": "Verbindung wird wiederhergestellt...", "connectionLost": "Verbindung unterbrochen",
+    "goHome": "Startseite"
+  },
+  "cards": {
+    "yourHand": "Deine Karten", "playCard": "Spielen",
+    "selectTarget": "Ziel auswählen", "cancelCard": "Abbrechen",
+    "spawn_board": { "name": "Neues Brett", "description": "Fügt ein neues Spielfeld neben dem aktuellen hinzu. Einmal pro Spiel.", "selectPrompt": "" },
+    "erase": { "name": "Löschen", "description": "Entfernt einen Zug des Gegners.", "selectPrompt": "Gegnerischen Zug zum Löschen auswählen" },
+    "nine_grid": { "name": "9-Raster", "description": "Verwandelt das Spiel in Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Spiegelschlag", "description": "Stiehlt einen gegnerischen Zug und wandelt ihn in deine Farbe um.", "selectPrompt": "Gegnerischen Zug zum Stehlen auswählen" },
+    "freeze": { "name": "Einfrieren", "description": "Sperrt eine Reihe oder Spalte für eine Runde.", "selectPrompt": "Reihe oder Spalte zum Einfrieren auswählen" },
+    "double_down": { "name": "Verdoppeln", "description": "Platziere zwei Markierungen in einem Zug.", "selectPrompt": "" },
+    "time_warp": { "name": "Zeitsprung", "description": "Macht die letzten zwei Züge rückgängig — einen pro Spieler.", "selectPrompt": "" }
+  },
+  "errors": {
+    "roomNotFound": "Raum nicht gefunden. Überprüfe den Code und versuche es erneut.",
+    "roomFull": "Dieser Raum ist bereits voll.", "notYourTurn": "Du bist nicht dran.",
+    "invalidMove": "Dieser Zug ist nicht erlaubt.", "cardAlreadyUsed": "Du hast diese Karte bereits gespielt.",
+    "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+  }
+}

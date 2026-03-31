@@ -1,0 +1,42 @@
+{
+  "nav": { "title": "Tic-Tac-Toe Chaos", "language": "Language" },
+  "room": {
+    "create": "Create Room",
+    "join": "Join Room",
+    "enterCode": "Enter room code",
+    "codePlaceholder": "e.g. KPM-7Q3",
+    "joinButton": "Join",
+    "yourCode": "Your room code",
+    "shareCode": "Share this code with your opponent",
+    "waitingForOpponent": "Waiting for opponent...",
+    "opponentJoined": "Opponent joined! Game starting..."
+  },
+  "game": {
+    "turnX": "X's turn", "turnO": "O's turn",
+    "yourTurn": "Your turn", "opponentTurn": "Opponent's turn",
+    "winnerX": "X wins!", "winnerO": "O wins!",
+    "youWin": "You win!", "youLose": "You lose!",
+    "draw": "It's a draw!", "gameOver": "Game Over",
+    "reconnecting": "Reconnecting...", "connectionLost": "Connection lost",
+    "goHome": "Go Home"
+  },
+  "cards": {
+    "yourHand": "Your cards", "playCard": "Play",
+    "selectTarget": "Select a target", "cancelCard": "Cancel",
+    "spawn_board": { "name": "Spawn Board", "description": "Add a new board adjacent to the current one. Once per game.", "selectPrompt": "" },
+    "erase": { "name": "Erase", "description": "Remove one of your opponent's marks.", "selectPrompt": "Select an opponent mark to erase" },
+    "nine_grid": { "name": "9 Grid", "description": "Transform the game into Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Mirror Strike", "description": "Steal one of your opponent's marks and flip it to your color.", "selectPrompt": "Select an opponent mark to steal" },
+    "freeze": { "name": "Freeze", "description": "Block a row or column for one full round.", "selectPrompt": "Select a row or column to freeze" },
+    "double_down": { "name": "Double Down", "description": "Place two marks in a single turn.", "selectPrompt": "" },
+    "time_warp": { "name": "Time Warp", "description": "Undo the last two moves — one from each player.", "selectPrompt": "" }
+  },
+  "errors": {
+    "roomNotFound": "Room not found. Check the code and try again.",
+    "roomFull": "This room is already full.",
+    "notYourTurn": "It's not your turn.",
+    "invalidMove": "That move is not allowed.",
+    "cardAlreadyUsed": "You have already used that card.",
+    "generic": "Something went wrong. Please try again."
+  }
+}

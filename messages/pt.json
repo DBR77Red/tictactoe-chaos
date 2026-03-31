@@ -1,0 +1,37 @@
+{
+  "nav": { "title": "Tic-Tac-Toe Chaos", "language": "Idioma" },
+  "room": {
+    "create": "Criar Sala", "join": "Entrar na Sala",
+    "enterCode": "Digite o código da sala", "codePlaceholder": "ex: KPM-7Q3",
+    "joinButton": "Entrar", "yourCode": "Código da sua sala",
+    "shareCode": "Compartilhe este código com seu adversário",
+    "waitingForOpponent": "Aguardando adversário...",
+    "opponentJoined": "Adversário entrou! O jogo vai começar..."
+  },
+  "game": {
+    "turnX": "Vez do X", "turnO": "Vez do O",
+    "yourTurn": "Sua vez", "opponentTurn": "Vez do adversário",
+    "winnerX": "X venceu!", "winnerO": "O venceu!",
+    "youWin": "Você venceu!", "youLose": "Você perdeu!",
+    "draw": "Empate!", "gameOver": "Fim de Jogo",
+    "reconnecting": "Reconectando...", "connectionLost": "Conexão perdida",
+    "goHome": "Início"
+  },
+  "cards": {
+    "yourHand": "Suas cartas", "playCard": "Jogar",
+    "selectTarget": "Selecione um alvo", "cancelCard": "Cancelar",
+    "spawn_board": { "name": "Novo Tabuleiro", "description": "Adiciona um novo tabuleiro ao lado do atual. Uma vez por jogo.", "selectPrompt": "" },
+    "erase": { "name": "Apagar", "description": "Remove uma jogada do adversário.", "selectPrompt": "Selecione uma jogada do adversário para apagar" },
+    "nine_grid": { "name": "Grade 9x", "description": "Transforma o jogo em Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Golpe Espelho", "description": "Rouba uma jogada do adversário e a converte para sua cor.", "selectPrompt": "Selecione uma jogada do adversário para roubar" },
+    "freeze": { "name": "Congelar", "description": "Bloqueia uma linha ou coluna por uma rodada.", "selectPrompt": "Selecione uma linha ou coluna para congelar" },
+    "double_down": { "name": "Dobrar Aposta", "description": "Coloque duas peças em um único turno.", "selectPrompt": "" },
+    "time_warp": { "name": "Dobra Temporal", "description": "Desfaz as duas últimas jogadas — uma de cada jogador.", "selectPrompt": "" }
+  },
+  "errors": {
+    "roomNotFound": "Sala não encontrada. Verifique o código e tente novamente.",
+    "roomFull": "Esta sala já está cheia.", "notYourTurn": "Não é sua vez.",
+    "invalidMove": "Essa jogada não é permitida.", "cardAlreadyUsed": "Você já usou essa carta.",
+    "generic": "Algo deu errado. Por favor, tente novamente."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "nav": { "title": "Tic-Tac-Toe Chaos", "language": "Idioma" },
+  "room": {
+    "create": "Crear Sala", "join": "Unirse a Sala",
+    "enterCode": "Introduce el código de sala", "codePlaceholder": "ej: KPM-7Q3",
+    "joinButton": "Unirse", "yourCode": "Código de tu sala",
+    "shareCode": "Comparte este código con tu oponente",
+    "waitingForOpponent": "Esperando al oponente...",
+    "opponentJoined": "¡Oponente conectado! El juego va a comenzar..."
+  },
+  "game": {
+    "turnX": "Turno de X", "turnO": "Turno de O",
+    "yourTurn": "Tu turno", "opponentTurn": "Turno del oponente",
+    "winnerX": "¡Gana X!", "winnerO": "¡Gana O!",
+    "youWin": "¡Ganaste!", "youLose": "¡Perdiste!",
+    "draw": "¡Empate!", "gameOver": "Fin del juego",
+    "reconnecting": "Reconectando...", "connectionLost": "Conexión perdida",
+    "goHome": "Inicio"
+  },
+  "cards": {
+    "yourHand": "Tus cartas", "playCard": "Jugar",
+    "selectTarget": "Selecciona un objetivo", "cancelCard": "Cancelar",
+    "spawn_board": { "name": "Nuevo Tablero", "description": "Añade un nuevo tablero junto al actual. Una vez por partida.", "selectPrompt": "" },
+    "erase": { "name": "Borrar", "description": "Elimina una jugada del oponente.", "selectPrompt": "Selecciona una jugada del oponente para borrar" },
+    "nine_grid": { "name": "Rejilla 9x", "description": "Transforma el juego en Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Golpe Espejo", "description": "Roba una jugada del oponente y cámbiala a tu color.", "selectPrompt": "Selecciona una jugada del oponente para robar" },
+    "freeze": { "name": "Congelar", "description": "Bloquea una fila o columna durante una ronda.", "selectPrompt": "Selecciona una fila o columna para congelar" },
+    "double_down": { "name": "Doble Apuesta", "description": "Coloca dos marcas en un solo turno.", "selectPrompt": "" },
+    "time_warp": { "name": "Salto Temporal", "description": "Deshace los dos últimos movimientos — uno de cada jugador.", "selectPrompt": "" }
+  },
+  "errors": {
+    "roomNotFound": "Sala no encontrada. Comprueba el código e inténtalo de nuevo.",
+    "roomFull": "Esta sala ya está llena.", "notYourTurn": "No es tu turno.",
+    "invalidMove": "Ese movimiento no está permitido.", "cardAlreadyUsed": "Ya has jugado esa carta.",
+    "generic": "Algo salió mal. Por favor, inténtalo de nuevo."
+  }
+}
