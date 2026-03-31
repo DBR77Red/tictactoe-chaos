@@ -28,6 +28,9 @@ export type CardId =
   | 'freeze'
   | 'double_down'
   | 'time_warp'
+  | 'shield'
+  | 'void'
+  | 'clone'
 
 export type FrozenState =
   | { type: 'row'; index: number; expiresAfterTurn: number }
@@ -40,6 +43,17 @@ export type ErasedCell = {
   expiresAfterTurn: number
 }
 
+export type ShieldedCell = {
+  boardIndex: number
+  cellIndex: number
+  expiresAfterTurn: number
+}
+
+export type VoidedCell = {
+  boardIndex: number
+  cellIndex: number
+}
+
 export type GameState = {
   board: Board
   turn: 'X' | 'O'
@@ -47,6 +61,8 @@ export type GameState = {
   cardsO: CardId[]
   frozen: FrozenState
   erasedCell: ErasedCell | null
+  shieldedCell: ShieldedCell | null
+  voidedCells: VoidedCell[]
   spawnBoardUsedX: boolean
   spawnBoardUsedO: boolean
   winner: 'X' | 'O' | 'draw' | null

@@ -9,6 +9,7 @@ import {
   applyUltimateMove,
   isCellFrozen,
   isCellErased,
+  isCellVoided,
 } from '@/lib/game-logic'
 import {
   applySpawnBoard,
@@ -18,6 +19,9 @@ import {
   applyFreeze,
   applyDoubleDown,
   applyTimeWarp,
+  applyShield,
+  applyVoid,
+  applyClone,
 } from '@/lib/cards'
 import type { GameState, CardId, Board, MultiBoard } from '@/lib/types'
 import type { Json } from '@/lib/database.types'
@@ -34,6 +38,8 @@ type UseGameReturn = {
   myCards: CardId[]
   activeCard: CardId | null
   doubleDownActive: boolean
+  cloneStep: 1 | 2 | null
+  cloneSrc: { boardIndex: number; cellIndex: number } | null
   setActiveCard: (card: CardId | null) => void
   playMove: (boardIndex: number, cellIndex: number) => Promise<void>
   playCard: (cardId: CardId, payload?: CardPayload) => Promise<void>
@@ -46,8 +52,23 @@ export function useGame(
   room: { player_x: string | null; player_o: string | null }
 ): UseGameReturn {
   const [gameState, setGameState] = useState<GameState | null>(null)
-  const [activeCard, setActiveCard] = useState<CardId | null>(null)
+  const [activeCardState, setActiveCardState] = useState<CardId | null>(null)
   const [doubleDownActive, setDoubleDownActive] = useState(false)
+  const [cloneStep, setCloneStep] = useState<1 | 2 | null>(null)
+  const [cloneSrc, setCloneSrc] = useState<{ boardIndex: number; cellIndex: number } | null>(null)
+
+  const setActiveCard = useCallback((card: CardId | null) => {
+    setActiveCardState(card)
+    if (card === 'clone') {
+      setCloneStep(1)
+      setCloneSrc(null)
+    } else {
+      setCloneStep(null)
+      setCloneSrc(null)
+    }
+  }, [])
+
+  const activeCard = activeCardState
   const [isLoading, setIsLoading] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
 
@@ -122,6 +143,7 @@ export function useGame(
     if (!gameState || !myMark || !myTurn) return
     if (isCellFrozen(gameState.frozen, cellIndex, gameState.turnNumber)) return
     if (isCellErased(gameState.erasedCell, boardIndex, cellIndex, gameState.turnNumber)) return
+    if (isCellVoided(gameState.voidedCells ?? [], boardIndex, cellIndex)) return
 
     setIsLoading(true)
 
@@ -239,6 +261,36 @@ export function useGame(
         setIsLoading(false)
         return
       }
+
+      case 'shield': {
+        if (!payload || !('boardIndex' in payload)) { setIsLoading(false); return }
+        newState = applyShield(gameState, payload.boardIndex, payload.cellIndex)
+        break
+      }
+
+      case 'void': {
+        if (!payload || !('boardIndex' in payload)) { setIsLoading(false); return }
+        newState = applyVoid(gameState, payload.boardIndex, payload.cellIndex)
+        break
+      }
+
+      case 'clone': {
+        if (!payload || !('boardIndex' in payload)) { setIsLoading(false); return }
+        if (cloneStep === 1) {
+          // Step 1: store source, wait for destination
+          setCloneSrc({ boardIndex: payload.boardIndex, cellIndex: payload.cellIndex })
+          setCloneStep(2)
+          setIsLoading(false)
+          return
+        }
+        // Step 2: apply clone
+        if (!cloneSrc) { setIsLoading(false); return }
+        newState = applyClone(gameState, cloneSrc.boardIndex, cloneSrc.cellIndex, payload.boardIndex, payload.cellIndex)
+        if (newState === gameState) { setIsLoading(false); return } // invalid target
+        setCloneStep(null)
+        setCloneSrc(null)
+        break
+      }
     }
 
     // All remaining cards advance the turn
@@ -254,7 +306,7 @@ export function useGame(
     await commitAndLog(finalState, 'card', { cardId, ...payload } as unknown as Json)
     setActiveCard(null)
     setIsLoading(false)
-  }, [gameState, myMark, myTurn, myCards, commitAndLog])
+  }, [gameState, myMark, myTurn, myCards, cloneStep, cloneSrc, commitAndLog])
 
   return {
     gameState,
@@ -263,6 +315,8 @@ export function useGame(
     myCards,
     activeCard,
     doubleDownActive,
+    cloneStep,
+    cloneSrc,
     setActiveCard,
     playMove,
     playCard,
@@ -288,6 +342,8 @@ async function commitGameState(
       cards_o: state.cardsO as unknown as Json,
       frozen: state.frozen as unknown as Json,
       erased_cell: (state.erasedCell ?? null) as unknown as Json,
+      shielded_cell: (state.shieldedCell ?? null) as unknown as Json,
+      voided_cells: (state.voidedCells ?? []) as unknown as Json,
       spawn_board_used_x: state.spawnBoardUsedX,
       spawn_board_used_o: state.spawnBoardUsedO,
       winner: state.winner,
@@ -318,6 +374,8 @@ function deserializeGameState(raw: Record<string, unknown>): GameState {
     cardsO: (raw.cards_o as CardId[]) ?? [],
     frozen: (raw.frozen as GameState['frozen']) ?? {},
     erasedCell: (raw.erased_cell as GameState['erasedCell']) ?? null,
+    shieldedCell: (raw.shielded_cell as GameState['shieldedCell']) ?? null,
+    voidedCells: (raw.voided_cells as GameState['voidedCells']) ?? [],
     spawnBoardUsedX: (raw.spawn_board_used_x as boolean) ?? false,
     spawnBoardUsedO: (raw.spawn_board_used_o as boolean) ?? false,
     winner: (raw.winner as GameState['winner']) ?? null,

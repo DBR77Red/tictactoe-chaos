@@ -28,7 +28,10 @@
     "mirror_strike": { "name": "Spiegelschlag", "description": "Konvertiert einen gegnerischen Zug.", "selectPrompt": "Zug zum Stehlen auswählen" },
     "freeze": { "name": "Einfrieren", "description": "Sperrt eine Reihe oder Spalte für 1 Runde.", "selectPrompt": "Reihe oder Spalte auswählen" },
     "double_down": { "name": "Verdoppeln", "description": "2 Markierungen in einem Zug.", "selectPrompt": "" },
-    "time_warp": { "name": "Zeitsprung", "description": "Macht 2 Züge rückgängig.", "selectPrompt": "" }
+    "time_warp": { "name": "Zeitsprung", "description": "Macht 2 Züge rückgängig.", "selectPrompt": "" },
+    "shield": { "name": "Schild", "description": "Schützt eine deiner Markierungen für 2 Runden.", "selectPrompt": "Markierung zum Schützen auswählen" },
+    "void": { "name": "Leere", "description": "Entfernt dauerhaft ein leeres Feld.", "selectPrompt": "Leeres Feld zum Entfernen auswählen" },
+    "clone": { "name": "Klonen", "description": "Kopiert eine Markierung auf ein benachbartes Feld.", "selectPrompt": "Markierung zum Klonen auswählen" }
   },
   "errors": {
     "roomNotFound": "Raum nicht gefunden. Überprüfe den Code und versuche es erneut.",

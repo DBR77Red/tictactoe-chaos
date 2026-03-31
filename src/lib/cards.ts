@@ -1,9 +1,10 @@
 import type { CardId, GameState, Mark, MultiBoard } from './types'
-import { classicToUltimate, classicToMulti, checkWinner } from './game-logic'
+import { classicToUltimate, classicToMulti, checkWinner, isCellShielded, isCellVoided } from './game-logic'
 
 export const ALL_CARD_IDS: CardId[] = [
   'spawn_board', 'erase', 'nine_grid',
-  'mirror_strike', 'freeze', 'double_down', 'time_warp'
+  'mirror_strike', 'freeze', 'double_down', 'time_warp',
+  'shield', 'void', 'clone',
 ]
 
 export function dealCards(): { cardsX: CardId[], cardsO: CardId[] } {
@@ -45,6 +46,8 @@ export function applySpawnBoard(state: GameState, layout: MultiBoard['layout']):
 
 // Card 2 — Erase: removes one opponent mark and blocks that cell for 1 full round.
 export function applyErase(state: GameState, boardIndex: number, cellIndex: number): GameState {
+  if (isCellShielded(state.shieldedCell ?? null, boardIndex, cellIndex, state.turnNumber)) return state
+
   const opponent: Mark = state.turn === 'X' ? 'O' : 'X'
   const board = state.board
 
@@ -103,6 +106,8 @@ export function applyNineGrid(state: GameState): GameState {
 
 // Card 4 — Mirror Strike: flips one opponent mark to current player's mark
 export function applyMirrorStrike(state: GameState, boardIndex: number, cellIndex: number): GameState {
+  if (isCellShielded(state.shieldedCell ?? null, boardIndex, cellIndex, state.turnNumber)) return state
+
   const opponent: Mark = state.turn === 'X' ? 'O' : 'X'
   const myMark: Mark = state.turn
   const board = state.board
@@ -178,4 +183,94 @@ export function applyTimeWarp(state: GameState): GameState {
     boardHistory: history.slice(0, -2),
     turnNumber: state.turnNumber - 2,
   }
+}
+
+// Card 8 — Shield: protects one of the current player's marks for 2 rounds.
+// Targeted cell cannot be erased or mirror-striked while the shield is active.
+export function applyShield(state: GameState, boardIndex: number, cellIndex: number): GameState {
+  const myMark: Mark = state.turn
+  const board = state.board
+
+  let isOwn = false
+  if (board.mode === 'classic') {
+    isOwn = board.cells[cellIndex] === myMark
+  } else {
+    isOwn = board.boards[boardIndex]?.cells[cellIndex] === myMark
+  }
+  if (!isOwn) return state
+
+  return {
+    ...spendCard(state, 'shield'),
+    shieldedCell: { boardIndex, cellIndex, expiresAfterTurn: state.turnNumber + 2 },
+  }
+}
+
+// Card 9 — Void: permanently removes an empty cell from the board.
+export function applyVoid(state: GameState, boardIndex: number, cellIndex: number): GameState {
+  const board = state.board
+
+  let isEmpty = false
+  if (board.mode === 'classic') {
+    isEmpty = board.cells[cellIndex] === null
+  } else {
+    isEmpty = board.boards[boardIndex]?.cells[cellIndex] === null
+  }
+  if (!isEmpty) return state
+  if (isCellVoided(state.voidedCells ?? [], boardIndex, cellIndex)) return state
+
+  return {
+    ...spendCard(state, 'void'),
+    voidedCells: [...(state.voidedCells ?? []), { boardIndex, cellIndex }],
+  }
+}
+
+// Card 10 — Clone: copies one of the current player's marks to an adjacent empty cell on the same board.
+export function applyClone(
+  state: GameState,
+  srcBoardIndex: number,
+  srcCellIndex: number,
+  dstBoardIndex: number,
+  dstCellIndex: number
+): GameState {
+  if (srcBoardIndex !== dstBoardIndex) return state
+  if (srcCellIndex === dstCellIndex) return state
+
+  const srcRow = Math.floor(srcCellIndex / 3)
+  const srcCol = srcCellIndex % 3
+  const dstRow = Math.floor(dstCellIndex / 3)
+  const dstCol = dstCellIndex % 3
+  if (Math.abs(srcRow - dstRow) > 1 || Math.abs(srcCol - dstCol) > 1) return state
+
+  const myMark: Mark = state.turn
+  const board = state.board
+
+  const getCells = (bi: number): Mark[] | null => {
+    if (board.mode === 'classic') return board.cells
+    return board.boards[bi]?.cells ?? null
+  }
+
+  const cells = getCells(srcBoardIndex)
+  if (!cells) return state
+  if (cells[srcCellIndex] !== myMark) return state
+  if (cells[dstCellIndex] !== null) return state
+  if (isCellVoided(state.voidedCells ?? [], dstBoardIndex, dstCellIndex)) return state
+
+  if (board.mode === 'classic') {
+    const newCells = [...board.cells]
+    newCells[dstCellIndex] = myMark
+    const newBoard = { ...board, cells: newCells }
+    const winner = checkWinner(newCells)
+    return { ...spendCard(state, 'clone'), board: newBoard, ...(winner ? { winner } : {}) }
+  }
+
+  const newBoards = board.boards.map((b, i) => {
+    if (i !== dstBoardIndex) return b
+    const newCells = [...b.cells]
+    newCells[dstCellIndex] = myMark
+    return { cells: newCells }
+  })
+
+  const newState = { ...spendCard(state, 'clone'), board: { ...board, boards: newBoards } }
+  const winner = checkWinner(newBoards[dstBoardIndex].cells)
+  return winner ? { ...newState, winner } : newState
 }

@@ -28,7 +28,10 @@
     "mirror_strike": { "name": "Golpe Espelho", "description": "Converte uma jogada adversária.", "selectPrompt": "Selecione uma jogada para roubar" },
     "freeze": { "name": "Congelar", "description": "Bloqueia uma linha ou coluna por 1 rodada.", "selectPrompt": "Selecione linha ou coluna" },
     "double_down": { "name": "Dobrar Aposta", "description": "Coloque 2 peças neste turno.", "selectPrompt": "" },
-    "time_warp": { "name": "Dobra Temporal", "description": "Desfaz as 2 últimas jogadas.", "selectPrompt": "" }
+    "time_warp": { "name": "Dobra Temporal", "description": "Desfaz as 2 últimas jogadas.", "selectPrompt": "" },
+    "shield": { "name": "Escudo", "description": "Protege uma de suas peças por 2 rodadas.", "selectPrompt": "Selecione sua peça para proteger" },
+    "void": { "name": "Vácuo", "description": "Remove permanentemente uma célula vazia.", "selectPrompt": "Selecione uma célula vazia para anular" },
+    "clone": { "name": "Clonar", "description": "Copia uma de suas peças para uma célula adjacente.", "selectPrompt": "Selecione sua peça para clonar" }
   },
   "errors": {
     "roomNotFound": "Sala não encontrada. Verifique o código e tente novamente.",
