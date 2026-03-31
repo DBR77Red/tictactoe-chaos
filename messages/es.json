@@ -6,7 +6,8 @@
     "joinButton": "Unirse", "yourCode": "Código de tu sala",
     "shareCode": "Comparte este código con tu oponente",
     "waitingForOpponent": "Esperando al oponente...",
-    "opponentJoined": "¡Oponente conectado! El juego va a comenzar..."
+    "opponentJoined": "¡Oponente conectado! El juego va a comenzar...",
+    "copy": "Copiar Código", "copied": "¡Copiado!"
   },
   "game": {
     "turnX": "Turno de X", "turnO": "Turno de O",
@@ -15,18 +16,19 @@
     "youWin": "¡Ganaste!", "youLose": "¡Perdiste!",
     "draw": "¡Empate!", "gameOver": "Fin del juego",
     "reconnecting": "Reconectando...", "connectionLost": "Conexión perdida",
+    "doubleDown": "Doble Apuesta — ¡coloca tu 2ª marca!",
     "goHome": "Inicio"
   },
   "cards": {
     "yourHand": "Tus cartas", "playCard": "Jugar",
     "selectTarget": "Selecciona un objetivo", "cancelCard": "Cancelar",
-    "spawn_board": { "name": "Nuevo Tablero", "description": "Añade un nuevo tablero junto al actual. Una vez por partida.", "selectPrompt": "" },
-    "erase": { "name": "Borrar", "description": "Elimina una jugada del oponente.", "selectPrompt": "Selecciona una jugada del oponente para borrar" },
-    "nine_grid": { "name": "Rejilla 9x", "description": "Transforma el juego en Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
-    "mirror_strike": { "name": "Golpe Espejo", "description": "Roba una jugada del oponente y cámbiala a tu color.", "selectPrompt": "Selecciona una jugada del oponente para robar" },
-    "freeze": { "name": "Congelar", "description": "Bloquea una fila o columna durante una ronda.", "selectPrompt": "Selecciona una fila o columna para congelar" },
-    "double_down": { "name": "Doble Apuesta", "description": "Coloca dos marcas en un solo turno.", "selectPrompt": "" },
-    "time_warp": { "name": "Salto Temporal", "description": "Deshace los dos últimos movimientos — uno de cada jugador.", "selectPrompt": "" }
+    "spawn_board": { "name": "Nuevo Tablero", "description": "Añade un tablero. Una vez por partida.", "selectPrompt": "" },
+    "erase": { "name": "Borrar", "description": "Elimina una jugada del oponente.", "selectPrompt": "Selecciona jugada para borrar" },
+    "nine_grid": { "name": "Rejilla 9x", "description": "Activa el modo Ultimate.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Golpe Espejo", "description": "Convierte una jugada del oponente.", "selectPrompt": "Selecciona jugada para robar" },
+    "freeze": { "name": "Congelar", "description": "Bloquea una fila o columna por 1 ronda.", "selectPrompt": "Selecciona fila o columna" },
+    "double_down": { "name": "Doble Apuesta", "description": "Coloca 2 marcas en un turno.", "selectPrompt": "" },
+    "time_warp": { "name": "Salto Temporal", "description": "Deshace los 2 últimos movimientos.", "selectPrompt": "" }
   },
   "errors": {
     "roomNotFound": "Sala no encontrada. Comprueba el código e inténtalo de nuevo.",

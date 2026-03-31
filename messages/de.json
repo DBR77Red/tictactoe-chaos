@@ -6,7 +6,8 @@
     "joinButton": "Beitreten", "yourCode": "Dein Raumcode",
     "shareCode": "Teile diesen Code mit deinem Gegner",
     "waitingForOpponent": "Warte auf Gegner...",
-    "opponentJoined": "Gegner beigetreten! Spiel startet..."
+    "opponentJoined": "Gegner beigetreten! Spiel startet...",
+    "copy": "Code kopieren", "copied": "Kopiert!"
   },
   "game": {
     "turnX": "X ist dran", "turnO": "O ist dran",
@@ -15,18 +16,19 @@
     "youWin": "Du gewinnst!", "youLose": "Du verlierst!",
     "draw": "Unentschieden!", "gameOver": "Spielende",
     "reconnecting": "Verbindung wird wiederhergestellt...", "connectionLost": "Verbindung unterbrochen",
+    "doubleDown": "Verdoppeln — setze deine 2. Markierung!",
     "goHome": "Startseite"
   },
   "cards": {
     "yourHand": "Deine Karten", "playCard": "Spielen",
     "selectTarget": "Ziel auswählen", "cancelCard": "Abbrechen",
-    "spawn_board": { "name": "Neues Brett", "description": "Fügt ein neues Spielfeld neben dem aktuellen hinzu. Einmal pro Spiel.", "selectPrompt": "" },
-    "erase": { "name": "Löschen", "description": "Entfernt einen Zug des Gegners.", "selectPrompt": "Gegnerischen Zug zum Löschen auswählen" },
-    "nine_grid": { "name": "9-Raster", "description": "Verwandelt das Spiel in Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
-    "mirror_strike": { "name": "Spiegelschlag", "description": "Stiehlt einen gegnerischen Zug und wandelt ihn in deine Farbe um.", "selectPrompt": "Gegnerischen Zug zum Stehlen auswählen" },
-    "freeze": { "name": "Einfrieren", "description": "Sperrt eine Reihe oder Spalte für eine Runde.", "selectPrompt": "Reihe oder Spalte zum Einfrieren auswählen" },
-    "double_down": { "name": "Verdoppeln", "description": "Platziere zwei Markierungen in einem Zug.", "selectPrompt": "" },
-    "time_warp": { "name": "Zeitsprung", "description": "Macht die letzten zwei Züge rückgängig — einen pro Spieler.", "selectPrompt": "" }
+    "spawn_board": { "name": "Neues Brett", "description": "Fügt ein Brett hinzu. Einmal pro Spiel.", "selectPrompt": "" },
+    "erase": { "name": "Löschen", "description": "Entfernt einen gegnerischen Zug.", "selectPrompt": "Zug zum Löschen auswählen" },
+    "nine_grid": { "name": "9-Raster", "description": "Aktiviert den Ultimate-Modus.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Spiegelschlag", "description": "Konvertiert einen gegnerischen Zug.", "selectPrompt": "Zug zum Stehlen auswählen" },
+    "freeze": { "name": "Einfrieren", "description": "Sperrt eine Reihe oder Spalte für 1 Runde.", "selectPrompt": "Reihe oder Spalte auswählen" },
+    "double_down": { "name": "Verdoppeln", "description": "2 Markierungen in einem Zug.", "selectPrompt": "" },
+    "time_warp": { "name": "Zeitsprung", "description": "Macht 2 Züge rückgängig.", "selectPrompt": "" }
   },
   "errors": {
     "roomNotFound": "Raum nicht gefunden. Überprüfe den Code und versuche es erneut.",

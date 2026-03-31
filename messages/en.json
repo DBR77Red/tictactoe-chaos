@@ -1,35 +1,34 @@
 {
   "nav": { "title": "Tic-Tac-Toe Chaos", "language": "Language" },
   "room": {
-    "create": "Create Room",
-    "join": "Join Room",
-    "enterCode": "Enter room code",
-    "codePlaceholder": "e.g. KPM-7Q3",
-    "joinButton": "Join",
-    "yourCode": "Your room code",
+    "create": "Create Room", "join": "Join Room",
+    "enterCode": "Enter room code", "codePlaceholder": "e.g. KPM-7Q3",
+    "joinButton": "Join", "yourCode": "Your room code",
     "shareCode": "Share this code with your opponent",
     "waitingForOpponent": "Waiting for opponent...",
-    "opponentJoined": "Opponent joined! Game starting..."
+    "opponentJoined": "Opponent joined! Game starting...",
+    "copy": "Copy Code", "copied": "Copied!"
   },
   "game": {
     "turnX": "X's turn", "turnO": "O's turn",
     "yourTurn": "Your turn", "opponentTurn": "Opponent's turn",
     "winnerX": "X wins!", "winnerO": "O wins!",
     "youWin": "You win!", "youLose": "You lose!",
-    "draw": "It's a draw!", "gameOver": "Game Over",
+    "draw": "Draw!", "gameOver": "Game Over",
     "reconnecting": "Reconnecting...", "connectionLost": "Connection lost",
+    "doubleDown": "Double Down — place your 2nd mark!",
     "goHome": "Go Home"
   },
   "cards": {
     "yourHand": "Your cards", "playCard": "Play",
     "selectTarget": "Select a target", "cancelCard": "Cancel",
-    "spawn_board": { "name": "Spawn Board", "description": "Add a new board adjacent to the current one. Once per game.", "selectPrompt": "" },
-    "erase": { "name": "Erase", "description": "Remove one of your opponent's marks.", "selectPrompt": "Select an opponent mark to erase" },
-    "nine_grid": { "name": "9 Grid", "description": "Transform the game into Ultimate Tic-Tac-Toe.", "selectPrompt": "" },
-    "mirror_strike": { "name": "Mirror Strike", "description": "Steal one of your opponent's marks and flip it to your color.", "selectPrompt": "Select an opponent mark to steal" },
-    "freeze": { "name": "Freeze", "description": "Block a row or column for one full round.", "selectPrompt": "Select a row or column to freeze" },
-    "double_down": { "name": "Double Down", "description": "Place two marks in a single turn.", "selectPrompt": "" },
-    "time_warp": { "name": "Time Warp", "description": "Undo the last two moves — one from each player.", "selectPrompt": "" }
+    "spawn_board": { "name": "Spawn Board", "description": "Add a new board. Once per game.", "selectPrompt": "" },
+    "erase": { "name": "Erase", "description": "Remove an opponent mark.", "selectPrompt": "Select opponent mark to erase" },
+    "nine_grid": { "name": "9 Grid", "description": "Enter Ultimate mode.", "selectPrompt": "" },
+    "mirror_strike": { "name": "Mirror Strike", "description": "Flip an opponent mark to yours.", "selectPrompt": "Select opponent mark to steal" },
+    "freeze": { "name": "Freeze", "description": "Lock a row or column for 1 round.", "selectPrompt": "Select row or column to freeze" },
+    "double_down": { "name": "Double Down", "description": "Place 2 marks this turn.", "selectPrompt": "" },
+    "time_warp": { "name": "Time Warp", "description": "Undo last 2 moves.", "selectPrompt": "" }
   },
   "errors": {
     "roomNotFound": "Room not found. Check the code and try again.",
