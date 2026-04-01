@@ -202,6 +202,28 @@ export function GameClient({ roomId }: Props) {
         <span className="text-sm font-black font-mono uppercase tracking-widest text-[#ff2d7a] [filter:drop-shadow(0_0_8px_#ff2d7a60)]">
           TTC
         </span>
+        {myMark && (
+          <div className="flex items-center gap-2 px-3 py-1 rounded border"
+            style={myMark === 'X'
+              ? { borderColor: '#ff2d7a60', backgroundColor: '#ff2d7a10' }
+              : { borderColor: '#00d4ff60', backgroundColor: '#00d4ff10' }
+            }
+          >
+            <span className="text-[10px] font-mono uppercase tracking-widest"
+              style={{ color: myMark === 'X' ? '#ff2d7a99' : '#00d4ff99' }}
+            >
+              You are
+            </span>
+            <span className="text-base font-black font-mono"
+              style={myMark === 'X'
+                ? { color: '#ff2d7a', filter: 'drop-shadow(0 0 6px #ff2d7a)' }
+                : { color: '#00d4ff', filter: 'drop-shadow(0 0 6px #00d4ff)' }
+              }
+            >
+              {myMark}
+            </span>
+          </div>
+        )}
         <button
           onClick={() => router.push(`/${locale}`)}
           className="text-xs font-mono uppercase tracking-widest text-[#555] hover:text-[#7b2fff] transition-colors"
