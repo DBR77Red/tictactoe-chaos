@@ -15,6 +15,25 @@ export function dealCards(): { cardsX: CardId[], cardsO: CardId[] } {
   }
 }
 
+export function createInitialGameState(): GameState {
+  const { cardsX, cardsO } = dealCards()
+  return {
+    board: { mode: 'classic', cells: Array(9).fill(null) as Mark[] },
+    turn: 'X',
+    cardsX,
+    cardsO,
+    frozen: {},
+    erasedCell: null,
+    shieldedCell: null,
+    voidedCells: [],
+    spawnBoardUsedX: false,
+    spawnBoardUsedO: false,
+    winner: null,
+    turnNumber: 1,
+    boardHistory: [],
+  }
+}
+
 export function removeCard(hand: CardId[], cardId: CardId): CardId[] {
   const idx = hand.indexOf(cardId)
   if (idx === -1) return hand

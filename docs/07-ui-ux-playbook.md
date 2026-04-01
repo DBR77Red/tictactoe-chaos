@@ -52,6 +52,9 @@
 | Freeze | Arctic Blue | `#00AAFF` |
 | Double Down | Neon Green | `#00FF9F` |
 | Time Warp | Arc Yellow | `#FFD600` |
+| Shield | Gold Amber | `#FFA500` |
+| Void | Dark Void | `#6B6B99` |
+| Clone | Teal | `#00E5CC` |
 
 ### Neon Glow Mixin (CSS)
 
@@ -474,6 +477,45 @@ Each card has 4 zones: **Badge** (glow color), **Icon**, **Name**, **Description
 | **Name** | TIME WARP |
 | **Effect** | Undo the last 2 moves — one from each player. |
 | **Flavor** | *"Rewrite history. One moment at a time."* |
+
+---
+
+#### Card 8 — Shield
+| Field | Value |
+|---|---|
+| **Glow Color** | `#FFA500` (Gold Amber) |
+| **Icon Concept** | A shield with a checkmark centered over a board cell — protection and permanence |
+| **Lucide Icon** | `ShieldCheck` |
+| **Name** | SHIELD |
+| **Effect** | Mark one of your existing cells as protected for 2 rounds. Protected cells cannot be targeted by Erase or Mirror Strike. |
+| **Flavor** | *"Some things cannot be taken."* |
+| **Restriction badge** | `OWN MARKS ONLY` in `--neon-orange` |
+
+---
+
+#### Card 9 — Void
+| Field | Value |
+|---|---|
+| **Glow Color** | `#6B6B99` (Dark Void) |
+| **Icon Concept** | A cell crossed out with a dark X glyph, fading into near-black — the cell ceases to exist |
+| **Lucide Icon** | `Minus` or `X` |
+| **Name** | VOID |
+| **Effect** | Permanently remove one empty cell from the board. No mark can ever be placed there again. |
+| **Flavor** | *"Some squares stop existing."* |
+| **Restriction badge** | `EMPTY CELLS ONLY` in `--neon-orange` |
+
+---
+
+#### Card 10 — Clone
+| Field | Value |
+|---|---|
+| **Glow Color** | `#00E5CC` (Teal) |
+| **Icon Concept** | Two overlapping identical marks with a faint copy trail — duplication in motion |
+| **Lucide Icon** | `Copy` or `Layers` |
+| **Name** | CLONE |
+| **Effect** | Copy one of your existing marks to any adjacent empty cell (orthogonal or diagonal). Turn passes after playing. |
+| **Flavor** | *"One becomes two."* |
+| **Restriction badge** | `SAME BOARD ONLY` in `--neon-orange` (no cross-board cloning in multi-board mode) |
 
 ---
 
