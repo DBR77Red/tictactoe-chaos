@@ -19,8 +19,8 @@ type Props = {
 }
 
 const META_MARK_STYLES: Record<NonNullable<Mark>, string> = {
-  X: 'text-[#ff2d7a] [filter:drop-shadow(0_0_16px_#ff2d7a)_drop-shadow(0_0_32px_#ff2d7a80)]',
-  O: 'text-[#00d4ff] [filter:drop-shadow(0_0_16px_#00d4ff)_drop-shadow(0_0_32px_#00d4ff80)]',
+  X: 'text-[#FF2D6B] [filter:drop-shadow(0_0_16px_#FF2D6B)_drop-shadow(0_0_40px_rgba(255,45,107,.5))]',
+  O: 'text-[#00E5FF] [filter:drop-shadow(0_0_16px_#00E5FF)_drop-shadow(0_0_40px_rgba(0,229,255,.5))]',
 }
 
 export function UltimateBoard({
@@ -37,7 +37,7 @@ export function UltimateBoard({
   disabled,
 }: Props) {
   return (
-    <div className="grid grid-cols-3 gap-1 p-1 bg-[#0a0a0f] border-2 border-[#c026d3] [box-shadow:0_0_20px_#c026d360]">
+    <div className="grid grid-cols-3 gap-1 p-1 bg-[#080818] border-2 border-[rgba(155,92,246,0.5)] rounded-xl [box-shadow:0_0_4px_#9B5CF6,0_0_14px_#9B5CF6,0_0_40px_rgba(155,92,246,.5)]">
       {board.boards.map((mini, boardIndex) => {
         const metaValue = board.metaBoard[boardIndex]
         const isForced = board.forcedBoard === boardIndex
