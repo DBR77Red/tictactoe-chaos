@@ -273,7 +273,16 @@ export function useGame(
       case 'freeze': {
         if (!payload || !('type' in payload)) { setIsLoading(false); return }
         newState = applyFreeze(gameState, payload)
-        break
+        // Freeze does NOT advance the turn — player gets a free move immediately after
+        const freezeState: GameState = {
+          ...newState,
+          boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
+        }
+        setGameState(freezeState)
+        await commitAndLog(freezeState, 'card', { cardId, ...payload } as unknown as Json)
+        setActiveCard(null)
+        setIsLoading(false)
+        return
       }
 
       case 'double_down': {
@@ -305,13 +314,31 @@ export function useGame(
       case 'shield': {
         if (!payload || !('boardIndex' in payload)) { setIsLoading(false); return }
         newState = applyShield(gameState, payload.boardIndex, payload.cellIndex)
-        break
+        // Shield does NOT advance the turn — player gets a free move immediately after
+        const shieldState: GameState = {
+          ...newState,
+          boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
+        }
+        setGameState(shieldState)
+        await commitAndLog(shieldState, 'card', { cardId, ...payload } as unknown as Json)
+        setActiveCard(null)
+        setIsLoading(false)
+        return
       }
 
       case 'void': {
         if (!payload || !('boardIndex' in payload)) { setIsLoading(false); return }
         newState = applyVoid(gameState, payload.boardIndex, payload.cellIndex)
-        break
+        // Void does NOT advance the turn — player gets a free move immediately after
+        const voidState: GameState = {
+          ...newState,
+          boardHistory: [...(gameState.boardHistory ?? []), gameState.board].slice(-3),
+        }
+        setGameState(voidState)
+        await commitAndLog(voidState, 'card', { cardId, ...payload } as unknown as Json)
+        setActiveCard(null)
+        setIsLoading(false)
+        return
       }
 
       case 'clone': {
