@@ -17,7 +17,11 @@
     "draw": "Unentschieden!", "gameOver": "Spielende",
     "reconnecting": "Verbindung wird wiederhergestellt...", "connectionLost": "Verbindung unterbrochen",
     "doubleDown": "Verdoppeln — setze deine 2. Markierung!",
-    "goHome": "Startseite"
+    "goHome": "Startseite",
+    "rematch": "Revanche",
+    "acceptRematch": "Revanche annehmen",
+    "waitingRematch": "Warte auf Gegner…",
+    "opponentWantsRematch": "Gegner möchte eine Revanche"
   },
   "cards": {
     "yourHand": "Deine Karten", "playCard": "Spielen",

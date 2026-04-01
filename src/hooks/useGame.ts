@@ -22,6 +22,7 @@ import {
   applyShield,
   applyVoid,
   applyClone,
+  createInitialGameState,
 } from '@/lib/cards'
 import type { GameState, CardId, Board, MultiBoard } from '@/lib/types'
 import type { Json } from '@/lib/database.types'
@@ -45,6 +46,9 @@ type UseGameReturn = {
   playCard: (cardId: CardId, payload?: CardPayload) => Promise<void>
   isLoading: boolean
   connectionStatus: 'connecting' | 'connected' | 'disconnected'
+  myRematchVote: boolean
+  opponentRematchVote: boolean
+  requestRematch: () => void
 }
 
 export function useGame(
@@ -56,6 +60,8 @@ export function useGame(
   const [doubleDownActive, setDoubleDownActive] = useState(false)
   const [cloneStep, setCloneStep] = useState<1 | 2 | null>(null)
   const [cloneSrc, setCloneSrc] = useState<{ boardIndex: number; cellIndex: number } | null>(null)
+  const [myRematchVote, setMyRematchVote] = useState(false)
+  const [opponentRematchVote, setOpponentRematchVote] = useState(false)
 
   const setActiveCard = useCallback((card: CardId | null) => {
     setActiveCardState(card)
@@ -115,6 +121,7 @@ export function useGame(
         { event: 'UPDATE', schema: 'public', table: 'game_states', filter: `room_id=eq.${roomId}` },
         handleUpdate
       )
+      .on('broadcast', { event: 'rematch_vote' }, () => setOpponentRematchVote(true))
       .on('system', {}, (status: string) => {
         if (status === 'SUBSCRIBED') setConnectionStatus('connected')
         if (status === 'CLOSED' || status === 'CHANNEL_ERROR') setConnectionStatus('disconnected')
@@ -137,6 +144,30 @@ export function useGame(
       supabase.removeChannel(channel)
     }
   }, [roomId, supabase])
+
+  const requestRematch = useCallback(() => {
+    setMyRematchVote(true)
+    channelRef.current?.send({ type: 'broadcast', event: 'rematch_vote', payload: {} })
+  }, [])
+
+  // Reset votes when a new game starts (winner becomes null)
+  useEffect(() => {
+    if (gameState?.winner === null) {
+      setMyRematchVote(false)
+      setOpponentRematchVote(false)
+    }
+  }, [gameState?.winner])
+
+  // When both have voted and game is still over, the player with write permission resets
+  useEffect(() => {
+    if (!myRematchVote || !opponentRematchVote || !gameState || !myMark) return
+    if (gameState.winner === null) return  // already reset, guard against double-reset
+    if (gameState.turn !== myMark) return  // only the player with RLS write permission resets
+    const newState = createInitialGameState()
+    setGameState(newState)
+    channelRef.current?.send({ type: 'broadcast', event: 'game_state', payload: newState })
+    commitGameState(supabase, roomId, newState)
+  }, [myRematchVote, opponentRematchVote, gameState, myMark, supabase, roomId])
 
   const commitAndLog = useCallback(async (
     newState: GameState,
@@ -331,6 +362,9 @@ export function useGame(
     playCard,
     isLoading,
     connectionStatus,
+    myRematchVote,
+    opponentRematchVote,
+    requestRematch,
   }
 }
 

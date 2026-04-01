@@ -64,7 +64,8 @@ export function GameClient({ roomId }: Props) {
   const { room, isLoading: roomLoading } = useRoom(roomId)
 
   const { gameState, myMark, myTurn, myCards, activeCard, doubleDownActive,
-    cloneStep, cloneSrc, setActiveCard, playMove, playCard, connectionStatus } = useGame(
+    cloneStep, cloneSrc, setActiveCard, playMove, playCard, connectionStatus,
+    myRematchVote, opponentRematchVote, requestRematch } = useGame(
     roomId,
     room ?? { player_x: null, player_o: null }
   )
@@ -395,7 +396,26 @@ export function GameClient({ roomId }: Props) {
 
       {/* Game over */}
       {isGameOver && (
-        <div className="pb-8 flex justify-center">
+        <div className="pb-8 flex flex-col items-center gap-3">
+          {!myRematchVote ? (
+            <button
+              onClick={requestRematch}
+              className="text-xs font-mono uppercase tracking-widest text-[#ff2d7a] border border-[#ff2d7a60] px-4 py-2 hover:border-[#ff2d7a] hover:[box-shadow:0_0_8px_#ff2d7a40] transition-all"
+            >
+              {opponentRematchVote ? t('acceptRematch') : t('rematch')}
+            </button>
+          ) : !opponentRematchVote ? (
+            <span className="text-xs font-mono uppercase tracking-widest text-[#555] animate-pulse">
+              {t('waitingRematch')}
+            </span>
+          ) : null}
+
+          {opponentRematchVote && !myRematchVote && (
+            <span className="text-xs font-mono uppercase tracking-widest text-[#7b2fff]">
+              {t('opponentWantsRematch')}
+            </span>
+          )}
+
           <button
             onClick={() => router.push(`/${locale}`)}
             className="text-xs font-mono uppercase tracking-widest text-[#7b2fff] border border-[#7b2fff30] px-4 py-2 hover:border-[#7b2fff] hover:[box-shadow:0_0_8px_#7b2fff40] transition-all"
