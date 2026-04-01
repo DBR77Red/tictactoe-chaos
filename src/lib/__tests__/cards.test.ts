@@ -38,12 +38,10 @@ describe('dealCards', () => {
     expect(cardsO).toHaveLength(3)
   })
 
-  it('deals non-overlapping hands', () => {
+  it('deals no duplicate card IDs within the same hand', () => {
     const { cardsX, cardsO } = dealCards()
-    const xSet = new Set(cardsX)
-    const oSet = new Set(cardsO)
-    const overlap = [...xSet].filter(c => oSet.has(c))
-    expect(overlap).toHaveLength(0)
+    expect(new Set(cardsX).size).toBe(cardsX.length)
+    expect(new Set(cardsO).size).toBe(cardsO.length)
   })
 
   it('only deals valid card IDs', () => {
@@ -229,7 +227,9 @@ describe('applyFreeze', () => {
 
 describe('applyDoubleDown', () => {
   it('removes double_down from hand', () => {
-    const state = makeState({ cardsX: ['double_down'] })
+    // Double Down is only valid in multi or ultimate mode
+    const multiBoard = { mode: 'multi' as const, boards: [{ cells: empty9() }, { cells: empty9() }], activeBoard: 0 } as GameState['board']
+    const state = makeState({ cardsX: ['double_down'], board: multiBoard })
     const next = applyDoubleDown(state)
     expect(next.cardsX).not.toContain('double_down')
   })
@@ -238,20 +238,23 @@ describe('applyDoubleDown', () => {
 describe('applyTimeWarp', () => {
   it('reverts board to two turns ago', () => {
     const oldBoard = { mode: 'classic' as const, cells: ['X', null, null, null, null, null, null, null, null] as Mark[] }
-    const state = makeState({ cardsX: ['time_warp'], turnNumber: 5 })
-    const next = applyTimeWarp(state, oldBoard)
+    const midBoard = { mode: 'classic' as const, cells: ['X', 'O', null, null, null, null, null, null, null] as Mark[] }
+    const state = makeState({ cardsX: ['time_warp'], turnNumber: 5, boardHistory: [oldBoard, midBoard] })
+    const next = applyTimeWarp(state)
     expect(next.board).toEqual(oldBoard)
     expect(next.turnNumber).toBe(3)
   })
 
   it('does nothing if turnNumber < 3', () => {
-    const state = makeState({ cardsX: ['time_warp'], turnNumber: 2 })
-    expect(applyTimeWarp(state, { mode: 'classic', cells: empty9() })).toBe(state)
+    const state = makeState({ cardsX: ['time_warp'], turnNumber: 2, boardHistory: [] })
+    expect(applyTimeWarp(state)).toBe(state)
   })
 
   it('removes time_warp card from hand', () => {
-    const state = makeState({ cardsX: ['time_warp'], turnNumber: 5 })
-    const next = applyTimeWarp(state, { mode: 'classic', cells: empty9() })
+    const boardA = { mode: 'classic' as const, cells: ['X', null, null, null, null, null, null, null, null] as Mark[] }
+    const boardB = { mode: 'classic' as const, cells: ['X', 'O', null, null, null, null, null, null, null] as Mark[] }
+    const state = makeState({ cardsX: ['time_warp'], turnNumber: 5, boardHistory: [boardA, boardB] })
+    const next = applyTimeWarp(state)
     expect(next.cardsX).not.toContain('time_warp')
   })
 })

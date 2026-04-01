@@ -7,8 +7,22 @@ export const ALL_CARD_IDS: CardId[] = [
   'shield', 'void', 'clone',
 ]
 
+// Weighted deck: rare cards appear once, uncommon twice, common three times.
+// Total: 5×1 + 3×2 + 2×3 = 17 cards.
+export const CARD_DECK: CardId[] = [
+  // Rare (×1)
+  'mirror_strike', 'double_down', 'clone', 'spawn_board', 'nine_grid',
+  // Uncommon (×2)
+  'void', 'void',
+  'erase', 'erase',
+  'shield', 'shield',
+  // Common (×3)
+  'time_warp', 'time_warp', 'time_warp',
+  'freeze', 'freeze', 'freeze',
+]
+
 export function dealCards(): { cardsX: CardId[], cardsO: CardId[] } {
-  const shuffled = [...ALL_CARD_IDS].sort(() => Math.random() - 0.5)
+  const shuffled = [...CARD_DECK].sort(() => Math.random() - 0.5)
   return {
     cardsX: shuffled.slice(0, 3) as CardId[],
     cardsO: shuffled.slice(3, 6) as CardId[]
