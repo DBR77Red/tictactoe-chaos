@@ -48,7 +48,7 @@ export function HomeClient() {
           className="text-lg font-medium tracking-[.08em] uppercase text-[#7B7FAA] mt-6"
           style={{ fontFamily: 'var(--font-rajdhani)' }}
         >
-          7 power cards · 3 game modes · Real-time
+          10 power cards · 3 game modes · Real-time
         </p>
         {/* Violet divider */}
         <div
