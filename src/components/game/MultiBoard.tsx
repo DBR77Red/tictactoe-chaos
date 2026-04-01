@@ -57,8 +57,9 @@ export function MultiBoard({
   const getVoidedCells = (boardIndex: number): number[] =>
     voidedCells.filter(v => v.boardIndex === boardIndex).map(v => v.cellIndex)
 
+  // Always vertical on mobile; respect layout direction on sm+
   const separator = isHorizontal ? (
-    <div className="w-px h-24 mx-4 bg-[#7b2fff] [box-shadow:0_0_8px_#7b2fff]" />
+    <div className="h-px w-24 my-4 sm:h-24 sm:w-px sm:my-0 sm:mx-4 bg-[#7b2fff] [box-shadow:0_0_8px_#7b2fff]" />
   ) : (
     <div className="h-px w-24 my-4 bg-[#7b2fff] [box-shadow:0_0_8px_#7b2fff]" />
   )
@@ -66,14 +67,14 @@ export function MultiBoard({
   return (
     <div className={cn(
       'flex items-center gap-0',
-      isHorizontal ? 'flex-row' : 'flex-col'
+      isHorizontal ? 'flex-col sm:flex-row' : 'flex-col'
     )}>
       {renderOrder.map((boardIndex, renderIdx) => (
         <div
           key={boardIndex}
           className={cn(
             'flex items-center',
-            isHorizontal ? 'flex-row' : 'flex-col'
+            isHorizontal ? 'flex-col sm:flex-row' : 'flex-col'
           )}
         >
           <div className="flex flex-col items-center gap-1">

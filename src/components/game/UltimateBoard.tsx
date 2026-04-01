@@ -64,6 +64,7 @@ export function UltimateBoard({
             }
           >
             <Board
+              compact
               cells={mini.cells}
               onCellClick={(cellIndex) => onCellClick(boardIndex, cellIndex)}
               winningLine={null}
@@ -85,7 +86,7 @@ export function UltimateBoard({
               <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0f]/80 pointer-events-none">
                 <span
                   className={cn(
-                    'text-6xl font-black font-mono leading-none',
+                    'text-[clamp(1.5rem,7vw,3.75rem)] font-black font-mono leading-none',
                     META_MARK_STYLES[metaValue as 'X' | 'O'],
                   )}
                 >

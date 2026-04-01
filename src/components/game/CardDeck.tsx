@@ -37,7 +37,7 @@ export function CardDeck({ cards, activeCard, onCardClick, myTurn, restrictedCar
         {t('yourHand')}
       </span>
 
-      <div className="flex items-end gap-3 px-4">
+      <div className="flex items-end gap-3 px-4 overflow-x-auto pb-1 scrollbar-none w-full justify-center">
         {slots.map((cardId, i) =>
           cardId ? (
             <Card
@@ -52,8 +52,9 @@ export function CardDeck({ cards, activeCard, onCardClick, myTurn, restrictedCar
             <div
               key={`empty-${i}`}
               style={{
-                width: 140,
-                minHeight: 200,
+                width: 'clamp(90px, 26vw, 140px)',
+                minHeight: 'clamp(140px, 37vw, 200px)',
+                flexShrink: 0,
                 borderRadius: 12,
                 border: '2px dashed rgba(155,92,246,0.2)',
                 background: 'rgba(13,13,43,0.4)',
