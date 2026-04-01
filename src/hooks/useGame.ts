@@ -98,6 +98,10 @@ export function useGame(
       })
     }
 
+    const handleUpdate = (payload: { new: Record<string, unknown> }) => {
+      setGameStateRef.current(() => deserializeGameState(payload.new))
+    }
+
     const channel = supabase
       .channel(`room:${roomId}`, { config: { broadcast: { self: false } } })
       .on('broadcast', { event: 'game_state' }, handleBroadcast)
@@ -105,6 +109,11 @@ export function useGame(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'game_states', filter: `room_id=eq.${roomId}` },
         handleInsert
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'game_states', filter: `room_id=eq.${roomId}` },
+        handleUpdate
       )
       .on('system', {}, (status: string) => {
         if (status === 'SUBSCRIBED') setConnectionStatus('connected')
