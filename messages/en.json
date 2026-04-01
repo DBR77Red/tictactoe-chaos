@@ -17,7 +17,11 @@
     "draw": "Draw!", "gameOver": "Game Over",
     "reconnecting": "Reconnecting...", "connectionLost": "Connection lost",
     "doubleDown": "Double Down — place your 2nd mark!",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "rematch": "Rematch",
+    "acceptRematch": "Accept Rematch",
+    "waitingRematch": "Waiting for opponent…",
+    "opponentWantsRematch": "Opponent wants a rematch"
   },
   "cards": {
     "yourHand": "Your cards", "playCard": "Play",

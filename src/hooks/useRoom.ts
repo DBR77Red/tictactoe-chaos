@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { createClient, playerId } from '@/lib/supabase'
-import { dealCards } from '@/lib/cards'
-import type { CardId } from '@/lib/types'
+import { createInitialGameState } from '@/lib/cards'
 
 type Room = {
   id: string
@@ -79,22 +78,20 @@ async function maybeInitGameState(
 
   if (existing) return // already initialized
 
-  const { cardsX, cardsO } = dealCards()
-
-  const initialBoard = { mode: 'classic', cells: Array(9).fill(null) }
+  const init = createInitialGameState()
 
   await supabase.from('game_states').insert({
     room_id: room.id,
-    board: initialBoard,
-    game_mode: 'classic',
-    turn: 'X',
-    cards_x: cardsX as CardId[],
-    cards_o: cardsO as CardId[],
-    frozen: {},
-    spawn_board_used_x: false,
-    spawn_board_used_o: false,
-    winner: null,
-    turn_number: 1,
+    board: init.board,
+    game_mode: init.board.mode,
+    turn: init.turn,
+    cards_x: init.cardsX,
+    cards_o: init.cardsO,
+    frozen: init.frozen,
+    spawn_board_used_x: init.spawnBoardUsedX,
+    spawn_board_used_o: init.spawnBoardUsedO,
+    winner: init.winner,
+    turn_number: init.turnNumber,
   })
 }
 

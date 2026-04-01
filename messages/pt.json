@@ -17,7 +17,11 @@
     "draw": "Empate!", "gameOver": "Fim de Jogo",
     "reconnecting": "Reconectando...", "connectionLost": "Conexão perdida",
     "doubleDown": "Dobrar Aposta — coloque sua 2ª peça!",
-    "goHome": "Início"
+    "goHome": "Início",
+    "rematch": "Revanche",
+    "acceptRematch": "Aceitar Revanche",
+    "waitingRematch": "Aguardando oponente…",
+    "opponentWantsRematch": "Oponente quer uma revanche"
   },
   "cards": {
     "yourHand": "Suas cartas", "playCard": "Jogar",
