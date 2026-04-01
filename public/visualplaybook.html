@@ -442,6 +442,9 @@
     .card-freeze { --card-color:#00AAFF; --card-color-rgb:0,170,255; }
     .card-double { --card-color:#00FF9F; --card-color-rgb:0,255,159; }
     .card-warp   { --card-color:#FFD600; --card-color-rgb:255,214,0; }
+    .card-shield { --card-color:#FFA500; --card-color-rgb:255,165,0; }
+    .card-void   { --card-color:#6B6B99; --card-color-rgb:107,107,153; }
+    .card-clone  { --card-color:#00E5CC; --card-color-rgb:0,229,204; }
 
     /* ─── Buttons ───────────────────────────────────────── */
     .btn {
@@ -918,13 +921,16 @@
     }
 
     .power-card { animation: card-deal-in .5s cubic-bezier(.22,1,.36,1) both; }
-    .power-card:nth-child(1) { animation-delay: .05s; }
-    .power-card:nth-child(2) { animation-delay: .15s; }
-    .power-card:nth-child(3) { animation-delay: .25s; }
-    .power-card:nth-child(4) { animation-delay: .35s; }
-    .power-card:nth-child(5) { animation-delay: .45s; }
-    .power-card:nth-child(6) { animation-delay: .55s; }
-    .power-card:nth-child(7) { animation-delay: .65s; }
+    .power-card:nth-child(1)  { animation-delay: .05s; }
+    .power-card:nth-child(2)  { animation-delay: .15s; }
+    .power-card:nth-child(3)  { animation-delay: .25s; }
+    .power-card:nth-child(4)  { animation-delay: .35s; }
+    .power-card:nth-child(5)  { animation-delay: .45s; }
+    .power-card:nth-child(6)  { animation-delay: .55s; }
+    .power-card:nth-child(7)  { animation-delay: .65s; }
+    .power-card:nth-child(8)  { animation-delay: .75s; }
+    .power-card:nth-child(9)  { animation-delay: .85s; }
+    .power-card:nth-child(10) { animation-delay: .95s; }
 
     /* ─── Token table ───────────────────────────────────── */
     .token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -1136,6 +1142,9 @@
         <tr><td class="t-name">Freeze</td><td><span class="color-chip" style="background:#00AAFF;box-shadow:0 0 6px #00AAFF"></span>Arctic Blue</td><td>#00AAFF</td><td style="color:var(--neon-green)">9.8 : 1 ✓</td></tr>
         <tr><td class="t-name">Double Down</td><td><span class="color-chip" style="background:#00FF9F;box-shadow:0 0 6px #00FF9F"></span>Neon Green</td><td>#00FF9F</td><td style="color:var(--neon-green)">14.3 : 1 ✓</td></tr>
         <tr><td class="t-name">Time Warp</td><td><span class="color-chip" style="background:#FFD600;box-shadow:0 0 6px #FFD600"></span>Arc Yellow</td><td>#FFD600</td><td style="color:var(--neon-green)">15.1 : 1 ✓</td></tr>
+        <tr><td class="t-name">Shield</td><td><span class="color-chip" style="background:#FFA500;box-shadow:0 0 6px #FFA500"></span>Gold Amber</td><td>#FFA500</td><td style="color:var(--neon-green)">9.9 : 1 ✓</td></tr>
+        <tr><td class="t-name">Void</td><td><span class="color-chip" style="background:#6B6B99;box-shadow:0 0 6px #6B6B99"></span>Dark Void</td><td>#6B6B99</td><td style="color:var(--neon-green)">4.6 : 1 ✓</td></tr>
+        <tr><td class="t-name">Clone</td><td><span class="color-chip" style="background:#00E5CC;box-shadow:0 0 6px #00E5CC"></span>Teal</td><td>#00E5CC</td><td style="color:var(--neon-green)">11.8 : 1 ✓</td></tr>
       </tbody>
     </table>
   </section>
@@ -1324,6 +1333,39 @@
         <div class="card-divider"></div>
         <div class="card-desc">Undo the last 2 moves — one from each player.</div>
         <div class="card-flavor">"Rewrite history. One moment at a time."</div>
+      </div>
+
+      <!-- 8 Shield -->
+      <div class="power-card card-shield">
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div class="card-name">SHIELD</div>
+        <div class="card-divider"></div>
+        <div class="card-desc">Protect one of your marks from Erase &amp; Mirror Strike for 2 rounds. <span class="once-badge">OWN MARKS ONLY</span></div>
+        <div class="card-flavor">"Some things cannot be taken."</div>
+      </div>
+
+      <!-- 9 Void -->
+      <div class="power-card card-void">
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+        </div>
+        <div class="card-name">VOID</div>
+        <div class="card-divider"></div>
+        <div class="card-desc">Permanently remove an empty cell — no mark can ever be placed there. <span class="once-badge">EMPTY ONLY</span></div>
+        <div class="card-flavor">"Some squares stop existing."</div>
+      </div>
+
+      <!-- 10 Clone -->
+      <div class="power-card card-clone">
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </div>
+        <div class="card-name">CLONE</div>
+        <div class="card-divider"></div>
+        <div class="card-desc">Copy one of your marks to any adjacent empty cell on the same board. <span class="once-badge">SAME BOARD</span></div>
+        <div class="card-flavor">"One becomes two."</div>
       </div>
 
     </div>
