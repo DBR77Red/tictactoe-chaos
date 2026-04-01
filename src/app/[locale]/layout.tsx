@@ -58,7 +58,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${rajdhani.variable} ${nunito.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${rajdhani.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <NextIntlClientProvider messages={messages}>
