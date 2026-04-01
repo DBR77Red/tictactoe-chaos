@@ -27,7 +27,8 @@ function RoomCodeDisplay({ code }: { code: string }) {
       <span className="text-xs font-mono uppercase tracking-widest text-[#555]">Share this code</span>
       <button
         onClick={copy}
-        className="px-8 py-4 font-mono text-3xl font-bold tracking-[0.3em] bg-[#12111a] border-2 border-[#7b2fff] text-[#ff2d7a] [filter:drop-shadow(0_0_10px_#ff2d7a)] [box-shadow:0_0_20px_#7b2fff40] hover:border-[#ff2d7a] transition-all rounded-lg cursor-pointer"
+        className="px-8 py-4 font-mono text-3xl font-bold tracking-[0.3em] bg-[#080818] border border-[rgba(0,229,255,.35)] rounded-[10px] text-[#00E5FF] [box-shadow:0_0_16px_rgba(0,229,255,.12)] hover:border-[rgba(0,229,255,.6)] transition-all cursor-pointer"
+        style={{ textShadow: '0 0 4px #00E5FF, 0 0 14px #00E5FF, 0 0 40px rgba(0,229,255,.5)' }}
       >
         {code}
       </button>
