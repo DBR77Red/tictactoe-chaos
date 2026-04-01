@@ -15,6 +15,7 @@ type Props = {
   selectionFilter?: Mark
   selectableCells?: number[]  // override for clone_dst: which cells are valid targets
   disabled?: boolean
+  compact?: boolean  // smaller cells for UltimateBoard mini-boards
 }
 
 const MARK_STYLES: Record<NonNullable<Mark>, string> = {
@@ -34,6 +35,7 @@ export function Board({
   selectionFilter,
   selectableCells,
   disabled,
+  compact = false,
 }: Props) {
   return (
     <div
@@ -69,7 +71,10 @@ export function Board({
             disabled={!canClick}
             className={cn(
               'relative flex items-center justify-center',
-              'h-20 w-20 text-4xl font-mono select-none',
+              compact
+                ? 'h-[clamp(28px,8vw,56px)] w-[clamp(28px,8vw,56px)] text-[clamp(0.75rem,2.5vw,1.5rem)]'
+                : 'h-20 w-20 text-4xl',
+              'font-mono select-none',
               'border border-[#7b2fff40]',
               'transition-all duration-150',
               /* hover glow on empty cells */

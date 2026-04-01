@@ -140,8 +140,8 @@ export function Card({ cardId, disabled, active, used, restricted, onClick }: Pr
         active && '-translate-y-2.5 scale-[1.05]',
       )}
       style={{
-        width: 140,
-        minHeight: 200,
+        width: 'clamp(90px, 26vw, 140px)',
+        minHeight: 'clamp(140px, 37vw, 200px)',
         padding: 12,
         background: 'linear-gradient(145deg, #12123A, #0D0D2B)',
         border: `${borderWidth}px solid ${used ? '#333' : color}`,
