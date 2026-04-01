@@ -59,9 +59,9 @@ export function MultiBoard({
 
   // Always vertical on mobile; respect layout direction on sm+
   const separator = isHorizontal ? (
-    <div className="h-px w-24 my-4 sm:h-24 sm:w-px sm:my-0 sm:mx-4 bg-[#7b2fff] [box-shadow:0_0_8px_#7b2fff]" />
+    <div className="h-px w-24 my-4 sm:h-24 sm:w-px sm:my-0 sm:mx-4 bg-gradient-to-r sm:bg-gradient-to-b from-transparent via-[#9B5CF6] to-transparent [box-shadow:0_0_8px_rgba(155,92,246,.5)]" />
   ) : (
-    <div className="h-px w-24 my-4 bg-[#7b2fff] [box-shadow:0_0_8px_#7b2fff]" />
+    <div className="h-px w-24 my-4 bg-gradient-to-r from-transparent via-[#9B5CF6] to-transparent [box-shadow:0_0_8px_rgba(155,92,246,.5)]" />
   )
 
   return (
@@ -78,7 +78,7 @@ export function MultiBoard({
           )}
         >
           <div className="flex flex-col items-center gap-1">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#7b2fff] [filter:drop-shadow(0_0_6px_#7b2fff)]">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#5E6390]">
               Board {boardIndex + 1}
             </span>
             <Board
